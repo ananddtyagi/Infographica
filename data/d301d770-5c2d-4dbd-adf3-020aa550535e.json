@@ -1,0 +1,58 @@
+{
+  "topic": "Migration of Early Humans",
+  "narrative": "Trace the incredible journey of Homo sapiens as they ventured forth from the African savanna to populate the entire globe. This story explores the climatic challenges, technological innovations, and daring explorations that allowed early humans to adapt to every environment on Earth.",
+  "slides": [
+    {
+      "title": "The Cradle of Humanity",
+      "content": "Our story begins in East Africa approximately 300,000 years ago, where Homo sapiens first evolved. The lush Rift Valley provided the resources necessary for early human development and social complexity before the great dispersal began.",
+      "imagePrompt": "Hyper-realistic educational illustration of the East African Rift Valley 300,000 years ago, lush green savanna with distant volcanic mountains, a small group of early Homo sapiens gathering roots and using simple stone tools, warm golden hour lighting.",
+      "type": "image",
+      "assetUrl": "/generated/819507f3-de97-43b7-9031-e95a9e8df89a.png",
+      "failed": false
+    },
+    {
+      "title": "Out of Africa",
+      "content": "Between 60,000 and 90,000 years ago, the first major waves of humans ventured out of Africa into the Levant and the Arabian Peninsula. This migration marked the critical bottleneck event that would eventually lead to the colonization of the rest of the world.",
+      "imagePrompt": "A detailed topographic map view focusing on the horn of Africa and the Red Sea, cinematic lighting, photorealistic texture.",
+      "videoPrompt": "An animated infographic map showing the African continent with glowing path lines moving from East Africa across the Red Sea and into the Middle East, symbolizing the first migration wave.",
+      "type": "video",
+      "assetUrl": "/generated/866cd6c1-f9ee-423e-bafa-a19bfd4324fa.mp4",
+      "failed": false
+    },
+    {
+      "title": "Braving the Ice Age",
+      "content": "As humans pushed deeper into Europe and Asia, they encountered the harsh conditions of the Ice Age. Survival required the invention of sewn clothing, control of fire, and specialized tools to hunt megafauna like mammoths.",
+      "imagePrompt": "Cinematic wide shot of a group of early humans trekking across a snowy Eurasian steppe, wearing heavy fur clothing, carrying spears, with a woolly mammoth visible in the misty distance, cold blue and white color palette.",
+      "type": "image",
+      "assetUrl": "/generated/f6ad2e8b-8e35-4abf-a72b-7552b1311d8b.png",
+      "failed": false
+    },
+    {
+      "title": "The First Mariners",
+      "content": "Remarkably, humans reached Australia and New Guinea around 50,000 years ago. This feat required the construction of rafts and the navigation of open ocean waters, representing the first known maritime voyages in history.",
+      "imagePrompt": "A dramatic scene of early humans on bamboo rafts navigating choppy ocean waters, the red dusty coastline of ancient Australia visible on the horizon, sunset lighting casting long shadows.",
+      "type": "image",
+      "assetUrl": "/generated/e1a3888a-aef7-49b2-ace9-717b31aa4361.png",
+      "failed": false
+    },
+    {
+      "title": "The Bering Land Bridge",
+      "content": "During the Last Glacial Maximum, lower sea levels exposed a land mass called Beringia connecting Siberia to Alaska. Humans crossed this grassy steppe bridge, following herds of game into the unpopulated Americas.",
+      "imagePrompt": "A wide aerial view of the Bering Strait, but land connects the continents.",
+      "videoPrompt": "Animation showing sea levels dropping to reveal a grassy land bridge between Asia and North America, with a migration arrow moving from Siberia into Alaska.",
+      "type": "video",
+      "assetUrl": "/generated/2f0f293e-c54c-4fd3-8912-e78841f4837c.mp4",
+      "failed": false
+    },
+    {
+      "title": "Settling the Americas",
+      "content": "Once across the ice-free corridors, humans spread rapidly southward, reaching the tip of South America within a few thousand years. They adapted to diverse biomes, from the Pacific Northwest forests to the Amazon jungle and the Andean mountains.",
+      "imagePrompt": "A split-screen illustration showing two distinct early American environments: one panel shows a campsite in a temperate forest with wooden shelters, the other panel shows a settlement high in the Andes mountains, demonstrating environmental adaptation.",
+      "type": "image",
+      "assetUrl": "/generated/0f7b1b4e-bda3-44ec-8ffb-53bf0efe6ca0.png",
+      "failed": false
+    }
+  ],
+  "id": "d301d770-5c2d-4dbd-adf3-020aa550535e",
+  "createdAt": "2025-11-23T05:55:32.159Z"
+}

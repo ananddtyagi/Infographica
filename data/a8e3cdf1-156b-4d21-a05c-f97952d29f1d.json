@@ -1,0 +1,71 @@
+{
+  "topic": "The Titanic",
+  "narrative": "The Titanic, a symbol of Edwardian ambition, was the largest ship of its time, built for luxury and speed. Its tragic maiden voyage and subsequent sinking remain a cautionary tale, captivating imaginations and inspiring ongoing exploration and remembrance.",
+  "slides": [
+    {
+      "title": "The Dream Ship",
+      "content": "Built by Harland and Wolff in Belfast, the Titanic represented the pinnacle of early 20th-century shipbuilding. It was designed to be unsinkable, a marvel of engineering boasting unparalleled luxury.",
+      "imagePrompt": "A detailed architectural rendering showcasing the Titanic's exterior, highlighting its immense size and opulent design during its construction in Belfast. Include workers and other ships in the background to emphasize the scale and activity of the shipyard.",
+      "videoPrompt": null,
+      "type": "image",
+      "assetUrl": "/generated/3419b467-0152-4b13-a9b0-ac893d4fcc01.png",
+      "failed": false
+    },
+    {
+      "title": "A Floating Palace",
+      "content": "The Titanic offered unparalleled amenities for its time, from grand staircases and lavish dining rooms to swimming pools and Turkish baths. First-class passengers experienced a level of comfort and extravagance rarely seen before.",
+      "imagePrompt": "An interior view of the Titanic's grand staircase, focusing on its intricate details and the elegant passengers ascending and descending. The image should convey a sense of luxury and grandeur typical of the Edwardian era.",
+      "videoPrompt": null,
+      "type": "image",
+      "assetUrl": "/generated/0051a6ad-740b-49f7-b5b1-69748865b206.png",
+      "failed": false
+    },
+    {
+      "title": "The Fateful Voyage",
+      "content": "Departing from Southampton on April 10, 1912, the Titanic set sail for New York City. The journey was initially smooth, with passengers enjoying the ship's many attractions and amenities.",
+      "imagePrompt": "A sweeping panoramic view of the Titanic sailing across the Atlantic Ocean on a clear day. Show the ship leaving Southampton with cheering crowds and smaller vessels surrounding it. Convey a sense of optimism and excitement.",
+      "videoPrompt": null,
+      "type": "image",
+      "assetUrl": "/generated/016d2ac1-8251-4721-beb6-c75fddd4e1d5.png",
+      "failed": false
+    },
+    {
+      "title": "Iceberg Ahead!",
+      "content": "On the night of April 14, 1912, the Titanic struck an iceberg in the North Atlantic. Despite attempts to steer clear, the impact caused significant damage to the ship's hull.",
+      "imagePrompt": "A dramatic nighttime scene of the Titanic striking a large iceberg in the dark, icy waters of the North Atlantic. Focus on the point of impact and the damage to the ship's hull beneath the waterline. Use lighting to emphasize the scale of the iceberg and the ship's vulnerability.",
+      "videoPrompt": null,
+      "type": "image",
+      "assetUrl": "/generated/8fdde7c1-3a07-4e70-b84a-e0367b489fd2.png",
+      "failed": false
+    },
+    {
+      "title": "Sinking Sequence",
+      "content": "The iceberg collision compromised several watertight compartments. As water flooded these compartments, the Titanic gradually listed and began to sink, a process that took nearly three hours.",
+      "imagePrompt": null,
+      "videoPrompt": "A 5-second moving infographic animation showing the Titanic sinking. Start with the iceberg collision and then illustrate the flooding of the watertight compartments in sequence, showing the ship gradually tilting and sinking lower into the water. Indicate time elapsed.",
+      "type": "video",
+      "assetUrl": "/generated/2a1b9add-ea45-4cbf-82f3-bf11aaa3eb01.mp4",
+      "failed": false
+    },
+    {
+      "title": "Loss and Legacy",
+      "content": "Over 1,500 lives were lost in the tragedy, highlighting the insufficient number of lifeboats and the lack of proper safety regulations. The disaster led to significant changes in maritime safety standards.",
+      "imagePrompt": "A somber scene depicting lifeboats filled with survivors rowing away from the sinking Titanic in the dark, with the ship's lights fading in the background. Convey a sense of despair and loss.",
+      "videoPrompt": null,
+      "type": "image",
+      "assetUrl": "/generated/9bf30cde-ca69-4003-a5da-66a758f1cee4.png",
+      "failed": false
+    },
+    {
+      "title": "Remembering the Titanic",
+      "content": "The wreck of the Titanic was discovered in 1985, fueling ongoing research and fascination with the ship. The tragedy serves as a reminder of the power of nature and the importance of safety.",
+      "imagePrompt": "An underwater view of the Titanic wreckage on the ocean floor, showing the ship's decaying hull and scattered artifacts. The image should evoke a sense of mystery and the passage of time.",
+      "videoPrompt": null,
+      "type": "image",
+      "assetUrl": "/generated/ece961dd-05e7-4162-97e6-97a225d3d326.png",
+      "failed": false
+    }
+  ],
+  "id": "a8e3cdf1-156b-4d21-a05c-f97952d29f1d",
+  "createdAt": "2025-11-23T03:51:35.093Z"
+}

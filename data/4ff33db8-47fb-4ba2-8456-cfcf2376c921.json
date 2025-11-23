@@ -1,0 +1,62 @@
+{
+  "topic": "history of the steam engine",
+  "narrative": "The steam engine, a revolutionary invention, harnessed the power of steam to perform work, transforming industries and shaping the modern world. From its humble beginnings in ancient times to its pivotal role in the Industrial Revolution, the steam engine has a rich and fascinating history of ingenuity and innovation.",
+  "slides": [
+    {
+      "title": "Hero of Alexandria's Aeolipile",
+      "content": "While not a practical engine, Hero of Alexandria's Aeolipile (1st century AD) demonstrated the principle of steam power. This device used steam jets to rotate a hollow sphere, showcasing early understanding of steam's potential.",
+      "imagePrompt": "A detailed, artistic rendering of Hero of Alexandria's Aeolipile. The Aeolipile is a brass sphere mounted on a cauldron over a fire. Steam escapes from two curved nozzles on opposite sides of the sphere, causing it to spin. The scene should be set in ancient Alexandria, with scrolls and tools visible in the background. The lighting should highlight the brass and the steam.",
+      "videoPrompt": null,
+      "type": "image",
+      "assetUrl": "/generated/b3cf44ac-f8a7-4a0b-825f-61c26e4cc748.png",
+      "failed": false
+    },
+    {
+      "title": "Savery's 'Miner's Friend'",
+      "content": "Thomas Savery's pump (1698), known as the 'Miner's Friend', was one of the first commercially viable steam-powered devices. It used vacuum created by condensing steam to draw water from mines, albeit inefficiently and prone to explosions.",
+      "imagePrompt": "A detailed illustration of Thomas Savery's 'Miner's Friend' steam pump. The pump is depicted in a flooded mine, showing how it draws water upwards through a series of pipes. Label key components such as the boiler, steam chamber, and cold water spray. The illustration should convey the device's industrial setting and the hazardous conditions of early mining.",
+      "videoPrompt": null,
+      "type": "image",
+      "assetUrl": "/generated/ba74228a-c843-476d-8759-766fc64668bc.png",
+      "failed": false
+    },
+    {
+      "title": "Newcomen's Atmospheric Engine",
+      "content": "Thomas Newcomen's engine (1712) was a significant improvement, using a piston and cylinder to create more efficient pumping. It was widely used in mines and other industries, paving the way for further advancements.",
+      "imagePrompt": "A cutaway diagram of Thomas Newcomen's atmospheric engine. Illustrate the key components: the boiler, cylinder, piston, beam, and water pump. Show the process of steam entering the cylinder, condensing to create a vacuum, and the piston being pulled down by atmospheric pressure. Label each part clearly and indicate the flow of steam and water.",
+      "videoPrompt": "A short animation showing the cycle of Newcomen's Atmospheric Engine. Starting with steam filling the cylinder, then cold water condensing it to create a vacuum, pulling the piston down. The beam connected to the piston moves, driving a pump at the other end. The cycle repeats continuously. Style: Simple, schematic animation.",
+      "type": "video",
+      "assetUrl": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXp4b3d4b3d4b3d4b3d4b3d4b3d4b3d4b3d4b3d4b3d4/3o7bu3XilJ5BOiSGic/giphy.mp4",
+      "failed": false
+    },
+    {
+      "title": "Watt's Improved Steam Engine",
+      "content": "James Watt's innovations, including the separate condenser and rotary motion, dramatically improved efficiency and versatility. His engine powered factories, locomotives, and ships, driving the Industrial Revolution.",
+      "imagePrompt": "A detailed portrait of James Watt standing next to his improved steam engine. The engine should be prominently displayed, highlighting features like the separate condenser and the mechanism for rotary motion. Watt should be depicted as an intelligent and thoughtful inventor, with tools and blueprints visible in the background. The image should evoke a sense of innovation and progress.",
+      "videoPrompt": "A short animation illustrating Watt's separate condenser. Show steam entering the cylinder, then being diverted to a separate condenser where it's cooled without cooling the cylinder itself. Emphasize the efficiency gained by maintaining a consistent temperature in the cylinder. Style: Simple, schematic animation.",
+      "type": "video",
+      "assetUrl": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXp4b3d4b3d4b3d4b3d4b3d4b3d4b3d4b3d4b3d4b3d4/3o7bu3XilJ5BOiSGic/giphy.mp4",
+      "failed": false
+    },
+    {
+      "title": "High-Pressure Engines",
+      "content": "Richard Trevithick and others developed high-pressure steam engines, making them smaller and more powerful. These engines were crucial for powering locomotives and other mobile applications.",
+      "imagePrompt": "An illustration of Richard Trevithick's 'Puffing Devil' locomotive in operation. The locomotive is shown pulling a train of coal wagons, with steam billowing from the chimney. The scene should capture the excitement and potential of early railway transportation. Show the engine's compact design compared to earlier steam engines.",
+      "videoPrompt": null,
+      "type": "image",
+      "assetUrl": "/generated/997d7149-db14-4c99-b57d-72a724afb6ff.png",
+      "failed": false
+    },
+    {
+      "title": "Legacy of the Steam Engine",
+      "content": "The steam engine revolutionized transportation, manufacturing, and mining, shaping the modern world. While largely replaced by other technologies, its impact remains profound, demonstrating the transformative power of innovation.",
+      "imagePrompt": "A collage of images representing the steam engine's impact. Include images of steam locomotives, steamships, factories powered by steam engines, and coal mines. The overall image should convey the wide-ranging influence of the steam engine on various aspects of society and industry during the Industrial Revolution.",
+      "videoPrompt": null,
+      "type": "image",
+      "assetUrl": "/generated/904618f5-12cf-4313-9fb2-e53442830a3e.png",
+      "failed": false
+    }
+  ],
+  "id": "4ff33db8-47fb-4ba2-8456-cfcf2376c921",
+  "createdAt": "2025-11-23T03:36:54.127Z"
+}
