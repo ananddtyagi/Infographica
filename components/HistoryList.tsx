@@ -4,23 +4,15 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Clock, Image as ImageIcon, Palette } from "lucide-react";
 import { IMAGE_STYLES, ImageStyle } from "./InputArea";
-
-interface HistoryItem {
-    id: string;
-    topic: string;
-    style?: ImageStyle;
-    createdAt: string;
-    slides: Array<{
-        assetUrl: string;
-    }>;
-}
+import { loadStories } from "@/lib/client-db";
+import { StoredStory } from "@/lib/types";
 
 interface HistoryListProps {
     onSelectStory?: (id: string) => void;
 }
 
 export default function HistoryList({ onSelectStory }: HistoryListProps) {
-    const [stories, setStories] = React.useState<HistoryItem[]>([]);
+    const [stories, setStories] = React.useState<Pick<StoredStory, "id" | "topic" | "style" | "createdAt" | "slides">[]>([]);
     const [loading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
@@ -29,11 +21,25 @@ export default function HistoryList({ onSelectStory }: HistoryListProps) {
 
     async function loadHistory() {
         try {
-            const res = await fetch("/api/history");
-            if (res.ok) {
-                const data = await res.json();
-                setStories(data);
+            // Load local stories
+            const localStories = await loadStories();
+            
+            // Load example stories
+            const examplesRes = await fetch("/api/examples");
+            let exampleStories: any[] = [];
+            if (examplesRes.ok) {
+                exampleStories = await examplesRes.json();
             }
+
+            // Merge and sort (local stories + example stories)
+            // Deduplicate by ID just in case
+            const allStories = [...localStories, ...exampleStories];
+            const uniqueStories = Array.from(new Map(allStories.map(s => [s.id, s])).values());
+            
+            // Sort by date descending
+            uniqueStories.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            
+            setStories(uniqueStories);
         } catch (error) {
             console.error("Failed to load history:", error);
         } finally {
@@ -89,10 +95,10 @@ export default function HistoryList({ onSelectStory }: HistoryListProps) {
                                 <span className="mx-2">•</span>
                                 {story.slides.length} slides
                             </div>
-                            {story.style && IMAGE_STYLES[story.style] && (
+                            {story.style && IMAGE_STYLES[story.style as ImageStyle] && (
                                 <div className="mt-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
                                     <Palette className="w-2.5 h-2.5 mr-1" />
-                                    {IMAGE_STYLES[story.style].name}
+                                    {IMAGE_STYLES[story.style as ImageStyle].name}
                                 </div>
                             )}
                         </div>

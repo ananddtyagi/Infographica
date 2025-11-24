@@ -3,38 +3,160 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Home, RotateCw } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { StoredStory, Slide } from "@/lib/types";
+import { saveStory } from "@/lib/client-db";
 
-interface Slide {
-    title: string;
-    content: string;
-    imagePrompt: string;
-    videoPrompt?: string;
-    type: "image" | "video";
-    assetUrl: string;
-    failed?: boolean;
-    errorMessage?: string;
+interface SlideMediaProps {
+    slide: Slide;
+    onRetry: () => void;
+    isRetrying: boolean;
 }
 
-interface Story {
-    id?: string;
-    topic: string;
-    narrative: string;
-    slides: Slide[];
+function SlideMedia({ slide, onRetry, isRetrying }: SlideMediaProps) {
+    const [isLoading, setIsLoading] = useState(true);
+    const [hasError, setHasError] = useState(false);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const isLoadedRef = useRef(false);
+
+    // Effect mainly for timeout management
+    useEffect(() => {
+        // We rely on the parent keying to reset state on URL/Slide changes.
+        // So here we just handle the timeout logic.
+        
+        if (slide.assetUrl && slide.type === "image") {
+            // Only set timeout if not already loaded (race condition protection)
+            if (!isLoadedRef.current) {
+                 if (timerRef.current) clearTimeout(timerRef.current);
+                 
+                 timerRef.current = setTimeout(() => {
+                     if (!isLoadedRef.current) {
+                         setHasError(true);
+                         setIsLoading(false);
+                     }
+                 }, 10000);
+            }
+        } else if (!slide.assetUrl) {
+            // If no asset, we are technically 'loading' (generating), but not waiting for an image load event.
+            // We don't set a timeout here because generation might take longer than 10s and is handled by parent/backend.
+            setIsLoading(false); 
+        }
+
+        return () => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+        };
+    }, [slide.assetUrl, slide.type]);
+
+    const handleLoad = () => {
+        isLoadedRef.current = true;
+        setIsLoading(false);
+        if (timerRef.current) clearTimeout(timerRef.current);
+    };
+
+    const handleError = () => {
+        isLoadedRef.current = true; // Mark as done so timeout doesn't fire
+        setIsLoading(false);
+        setHasError(true);
+        if (timerRef.current) clearTimeout(timerRef.current);
+    };
+
+    const isGenerating = (!slide.assetUrl || slide.assetUrl === "") && !slide.failed;
+    
+    // Show retry if:
+    // 1. Explicit failure (slide.failed)
+    // 2. Local error (hasError)
+    // 3. Placeholder/Empty url AND not generating
+    const isPlaceholder = !slide.assetUrl || slide.assetUrl === "" || slide.assetUrl === "/placeholder.png" || slide.failed || hasError;
+    const shouldShowRetry = isPlaceholder && !isGenerating;
+
+    // If generating, we want to show the specific generating UI, not the "image loading" spinner.
+    // "isLoading" tracks the image tag loading. 
+    // If assetUrl is empty, isLoading is set to false by effect, but we render the "Generating" UI based on isGenerating.
+    
+    return (
+        <div className="w-full h-full relative">
+            {slide.type === "video" ? (
+                <>
+                    {slide.assetUrl && slide.assetUrl !== "" && (
+                        <video
+                            src={slide.assetUrl}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="w-full h-full object-cover"
+                            onCanPlay={handleLoad}
+                            onError={handleError}
+                        />
+                    )}
+                    {isGenerating && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 dark:bg-[#1a1a1a]">
+                            <div className="w-10 h-10 border-2 border-gray-200 dark:border-gray-800 border-t-gray-900 dark:border-t-gray-100 rounded-full animate-spin mb-4"></div>
+                            <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Video is being created!</p>
+                        </div>
+                    )}
+                </>
+            ) : (
+                <>
+                    {slide.assetUrl && slide.assetUrl !== "" && (
+                        <img
+                            src={slide.assetUrl}
+                            alt={slide.title}
+                            className={`w-full h-full object-cover ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
+                            onLoad={handleLoad}
+                            onError={handleError}
+                        />
+                    )}
+                    {isLoading && !hasError && slide.assetUrl && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-gray-50 dark:bg-[#1a1a1a]">
+                            <div className="w-10 h-10 border-2 border-gray-200 dark:border-gray-800 border-t-gray-900 dark:border-t-gray-100 rounded-full animate-spin"></div>
+                        </div>
+                    )}
+                    {isGenerating && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 dark:bg-[#1a1a1a]">
+                            <div className="w-10 h-10 border-2 border-gray-200 dark:border-gray-800 border-t-gray-900 dark:border-t-gray-100 rounded-full animate-spin mb-4"></div>
+                            <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Image is being created!</p>
+                        </div>
+                    )}
+                </>
+            )}
+
+            {/* Retry Overlay */}
+            {shouldShowRetry && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-[#1a1a1a] z-10">
+                    <div className="text-center">
+                        <p className="text-gray-600 dark:text-gray-400 mb-4 px-4">
+                            {slide.errorMessage || `${slide.type === "video" ? "Video" : "Image"} failed to load`}
+                        </p>
+                        <button
+                            onClick={onRetry}
+                            disabled={isRetrying}
+                            className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-500 dark:bg-gray-100 dark:hover:bg-gray-200 dark:disabled:bg-gray-600 text-white dark:text-gray-900 rounded-md font-medium flex items-center gap-2 transition-colors mx-auto"
+                        >
+                            <RotateCw className={`w-5 h-5 ${isRetrying ? "animate-spin" : ""}`} />
+                            {isRetrying ? "Retrying..." : "Retry Generation"}
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 }
 
 interface SlideshowProps {
-    story: Story;
+    story: StoredStory;
     onReset: () => void;
 }
 
 export function Slideshow({ story, onReset }: SlideshowProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
+    // Initialize slides from props, but keep local state for optimistic updates during retry
     const [slides, setSlides] = useState(story.slides);
     const [retrying, setRetrying] = useState<number | null>(null);
-    const [imageLoading, setImageLoading] = useState(true);
-    const [imageError, setImageError] = useState(false);
-    const loadTimerRef = useRef<NodeJS.Timeout | null>(null);
-    const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Update local slides when prop changes (e.g. parent finishes generation)
+    useEffect(() => {
+        setSlides(story.slides);
+    }, [story.slides]);
 
     const nextSlide = useCallback(() => {
         if (currentIndex < slides.length - 1) {
@@ -47,35 +169,6 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
             setCurrentIndex(currentIndex - 1);
         }
     }, [currentIndex]);
-
-    // Poll for updates (video or image)
-    useEffect(() => {
-        const hasUnfinishedSlides = slides.some(
-            slide => (!slide.assetUrl || slide.assetUrl === "") && !slide.failed
-        );
-
-        if (hasUnfinishedSlides && story.id) {
-            // Poll every 2 seconds for updates
-            pollIntervalRef.current = setInterval(async () => {
-                try {
-                    const response = await fetch(`/api/story?id=${story.id}`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        setSlides(data.slides);
-                    }
-                } catch (error) {
-                    console.error("Error polling for updates:", error);
-                }
-            }, 2000);
-        }
-
-        return () => {
-            if (pollIntervalRef.current) {
-                clearInterval(pollIntervalRef.current);
-                pollIntervalRef.current = null;
-            }
-        };
-    }, [slides, story.id]);
 
     // Keyboard navigation
     useEffect(() => {
@@ -101,104 +194,69 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
         try {
             const apiKey = localStorage.getItem("gemini_api_key");
             const videoModel = localStorage.getItem("gemini_video_model");
+            const style = story.style || "drawing"; // fallback style
+            const slide = slides[slideIndex];
 
-            const response = await fetch("/api/retry-image", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    storyId: story.id,
-                    slideIndex,
-                    prompt: slides[slideIndex].type === "video" ? slides[slideIndex].videoPrompt || slides[slideIndex].imagePrompt : slides[slideIndex].imagePrompt,
-                    type: slides[slideIndex].type,
-                    apiKey,
-                    videoModel
-                }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                if (response.status === 429 && errorData.error) {
-                    // Update the slide with the error message so it shows inline
-                    const updatedSlides = [...slides];
-                    updatedSlides[slideIndex] = {
-                        ...updatedSlides[slideIndex],
-                        errorMessage: errorData.error,
-                        failed: true
-                    };
-                    setSlides(updatedSlides);
-                    return; // Don't throw, just update UI
+            let assetUrl = "";
+            
+            if (slide.type === "image") {
+                 const res = await fetch("/api/generate-image", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ prompt: slide.imagePrompt, style, apiKey }),
+                });
+                if (!res.ok) throw new Error("Failed to generate image");
+                const data = await res.json();
+                assetUrl = data.assetUrl;
+            } else if (slide.type === "video") {
+                 const res = await fetch("/api/generate-video", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ prompt: slide.videoPrompt, style, apiKey, model: videoModel }),
+                });
+                if (!res.ok) {
+                     const errorData = await res.json().catch(() => ({}));
+                     if (res.status === 429 || errorData.error === "VIDEO_RATE_LIMIT_EXCEEDED") {
+                         throw new Error("Video rate limit exceeded");
+                     }
+                     throw new Error("Failed to generate video");
                 }
-                throw new Error("Retry failed");
+                const data = await res.json();
+                assetUrl = data.assetUrl;
             }
 
-            const data = await response.json();
+            if (assetUrl) {
+                const updatedSlides = [...slides];
+                updatedSlides[slideIndex] = {
+                    ...updatedSlides[slideIndex],
+                    assetUrl: assetUrl,
+                    failed: false,
+                    errorMessage: undefined
+                };
+                setSlides(updatedSlides);
+                
+                // Save to DB
+                const updatedStory = { ...story, slides: updatedSlides };
+                await saveStory(updatedStory);
+            } else {
+                throw new Error("No asset URL returned");
+            }
 
+        } catch (error: any) {
+            console.error("Error retrying asset:", error);
             const updatedSlides = [...slides];
             updatedSlides[slideIndex] = {
                 ...updatedSlides[slideIndex],
-                assetUrl: data.assetUrl,
-                failed: data.failed,
-                errorMessage: undefined // Clear any previous error message
+                failed: true,
+                errorMessage: error.message || "Retry failed"
             };
             setSlides(updatedSlides);
-        } catch (error: any) {
-            console.error("Error retrying image:", error);
-            alert("Failed to retry image generation. Please try again.");
         } finally {
             setRetrying(null);
         }
     };
 
     const currentSlide = slides[currentIndex];
-
-    // Reset loading state when slide changes
-    useEffect(() => {
-        if (!currentSlide) return;
-
-        setImageLoading(true);
-        setImageError(false);
-
-        // Clear any existing timer
-        if (loadTimerRef.current) {
-            clearTimeout(loadTimerRef.current);
-        }
-
-        // Set error after 10 seconds if image hasn't loaded
-        if (currentSlide.type === "image") {
-            loadTimerRef.current = setTimeout(() => {
-                setImageError(true);
-                setImageLoading(false);
-            }, 10000);
-        }
-
-        return () => {
-            if (loadTimerRef.current) {
-                clearTimeout(loadTimerRef.current);
-                loadTimerRef.current = null;
-            }
-        };
-    }, [currentIndex, currentSlide?.assetUrl, currentSlide?.type]);
-
-    const handleImageLoad = () => {
-        setImageLoading(false);
-        // Clear the timeout since image loaded successfully
-        if (loadTimerRef.current) {
-            clearTimeout(loadTimerRef.current);
-            loadTimerRef.current = null;
-        }
-    };
-
-    const handleImageError = () => {
-        setImageLoading(false);
-        setImageError(true);
-        // Clear the timeout since we're handling the error
-        if (loadTimerRef.current) {
-            clearTimeout(loadTimerRef.current);
-            loadTimerRef.current = null;
-        }
-    };
 
     // Safety check: if no slides yet, show loading state
     if (!currentSlide || slides.length === 0) {
@@ -209,11 +267,6 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
             </div>
         );
     }
-
-    // For videos/images: only show retry if failed, not if still generating
-    const isGenerating = (!currentSlide.assetUrl || currentSlide.assetUrl === "") && !currentSlide.failed;
-    const isPlaceholder = !currentSlide.assetUrl || currentSlide.assetUrl === "" || currentSlide.assetUrl === "/placeholder.png" || currentSlide.failed || imageError;
-    const shouldShowRetry = isPlaceholder && !isGenerating;
 
     return (
         <div className="relative w-full min-h-screen bg-white dark:bg-[#0a0a0a] flex flex-col">
@@ -270,68 +323,12 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
                                     transition={{ duration: 0.2 }}
                                     className="w-full h-full"
                                 >
-                                    {currentSlide.type === "video" ? (
-                                        <>
-                                            {currentSlide.assetUrl && currentSlide.assetUrl !== "" && (
-                                                <video
-                                                    src={currentSlide.assetUrl}
-                                                    autoPlay
-                                                    loop
-                                                    muted
-                                                    playsInline
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            )}
-                                            {(!currentSlide.assetUrl || currentSlide.assetUrl === "") && !currentSlide.failed && (
-                                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 dark:bg-[#1a1a1a]">
-                                                    <div className="w-10 h-10 border-2 border-gray-200 dark:border-gray-800 border-t-gray-900 dark:border-t-gray-100 rounded-full animate-spin mb-4"></div>
-                                                    <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Video is being created!</p>
-                                                </div>
-                                            )}
-                                        </>
-                                    ) : (
-                                        <>
-                                            {currentSlide.assetUrl && currentSlide.assetUrl !== "" && (
-                                                <img
-                                                    src={currentSlide.assetUrl}
-                                                    alt={currentSlide.title}
-                                                    className={`w-full h-full object-cover ${imageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
-                                                    onLoad={handleImageLoad}
-                                                    onError={handleImageError}
-                                                />
-                                            )}
-                                            {imageLoading && !imageError && currentSlide.assetUrl && (
-                                                <div className="absolute inset-0 flex items-center justify-center bg-gray-50 dark:bg-[#1a1a1a]">
-                                                    <div className="w-10 h-10 border-2 border-gray-200 dark:border-gray-800 border-t-gray-900 dark:border-t-gray-100 rounded-full animate-spin"></div>
-                                                </div>
-                                            )}
-                                            {(!currentSlide.assetUrl || currentSlide.assetUrl === "") && !currentSlide.failed && (
-                                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 dark:bg-[#1a1a1a]">
-                                                    <div className="w-10 h-10 border-2 border-gray-200 dark:border-gray-800 border-t-gray-900 dark:border-t-gray-100 rounded-full animate-spin mb-4"></div>
-                                                    <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Image is being created!</p>
-                                                </div>
-                                            )}
-                                        </>
-                                    )}
-
-                                    {/* Retry Overlay - only show if actually failed, not if still generating */}
-                                    {shouldShowRetry && (
-                                        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-[#1a1a1a] z-10">
-                                            <div className="text-center">
-                                                <p className="text-gray-600 dark:text-gray-400 mb-4 px-4">
-                                                    {currentSlide.errorMessage || `${currentSlide.type === "video" ? "Video" : "Image"} failed to load`}
-                                                </p>
-                                                <button
-                                                    onClick={() => handleRetry(currentIndex)}
-                                                    disabled={retrying === currentIndex}
-                                                    className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-500 dark:bg-gray-100 dark:hover:bg-gray-200 dark:disabled:bg-gray-600 text-white dark:text-gray-900 rounded-md font-medium flex items-center gap-2 transition-colors mx-auto"
-                                                >
-                                                    <RotateCw className={`w-5 h-5 ${retrying === currentIndex ? "animate-spin" : ""}`} />
-                                                    {retrying === currentIndex ? "Retrying..." : "Retry Generation"}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
+                                    <SlideMedia 
+                                        key={`${currentIndex}-${currentSlide.assetUrl || 'empty'}`}
+                                        slide={currentSlide} 
+                                        onRetry={() => handleRetry(currentIndex)}
+                                        isRetrying={retrying === currentIndex}
+                                    />
                                 </motion.div>
                             </AnimatePresence>
 

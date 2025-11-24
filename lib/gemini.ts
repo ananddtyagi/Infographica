@@ -197,19 +197,8 @@ export async function generateImage(prompt: string, style?: string, apiKey?: str
       if (candidate.content?.parts) {
         for (const part of candidate.content.parts) {
           if (part.inlineData && part.inlineData.data) {
-            const fileName = `${uuidv4()}.png`;
-            const dirPath = path.join(process.cwd(), "public", "generated");
-            const filePath = path.join(dirPath, fileName);
-
-            // Ensure directory exists
-            if (!fs.existsSync(dirPath)) {
-              fs.mkdirSync(dirPath, { recursive: true });
-            }
-
-            const imageBuffer = Buffer.from(part.inlineData.data, 'base64');
-            fs.writeFileSync(filePath, imageBuffer);
-
-            return `/generated/${fileName}`;
+             // Return Base64 Data URL directly
+            return `data:image/png;base64,${part.inlineData.data}`;
           }
         }
       }
@@ -222,22 +211,14 @@ export async function generateImage(prompt: string, style?: string, apiKey?: str
 
     // Fallback to placeholder
     try {
-      const fileName = `${uuidv4()}.png`;
-      const dirPath = path.join(process.cwd(), "public", "generated");
-      const filePath = path.join(dirPath, fileName);
-
-      if (!fs.existsSync(dirPath)) {
-        fs.mkdirSync(dirPath, { recursive: true });
-      }
-
       const response = await fetch(`https://placehold.co/600x400/png?text=${encodeURIComponent(prompt.substring(0, 20))}`);
       const buffer = await response.arrayBuffer();
-      fs.writeFileSync(filePath, Buffer.from(buffer));
-
-      return `/generated/${fileName}`;
+      const base64 = Buffer.from(buffer).toString('base64');
+      return `data:image/png;base64,${base64}`;
     } catch (fallbackError) {
       console.error("Fallback image generation also failed", fallbackError);
-      return "/placeholder.png";
+      // Return a minimal transparent pixel or standard placeholder as data URL
+      return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
     }
   }
 }
@@ -299,10 +280,11 @@ export async function generateVideo(prompt: string, style?: string, apiKey?: str
     const videoResource = videoFile;
 
     const fileName = `${uuidv4()}.mp4`;
-    const dirPath = path.join(process.cwd(), "public", "generated");
+    // Use /tmp for Vercel compatibility
+    const dirPath = "/tmp"; 
     const filePath = path.join(dirPath, fileName);
 
-    // Ensure directory exists
+    // Ensure directory exists (should exist but just in case)
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
     }
@@ -313,8 +295,16 @@ export async function generateVideo(prompt: string, style?: string, apiKey?: str
       downloadPath: filePath,
     });
 
-    console.log(`Generated video saved to ${filePath}`);
-    return `/generated/${fileName}`;
+    console.log(`Generated video downloaded to ${filePath}`);
+    
+    // Read file to buffer and convert to Base64
+    const videoBuffer = fs.readFileSync(filePath);
+    const base64Video = videoBuffer.toString('base64');
+    
+    // Clean up temp file
+    fs.unlinkSync(filePath);
+    
+    return `data:video/mp4;base64,${base64Video}`;
 
   } catch (error: any) {
     console.error("Video generation failed", error);

@@ -13,13 +13,6 @@ export default function Home() {
         const id = uuidv4();
         
         try {
-            // Initialize the story placeholder first
-            await fetch("/api/init-story", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ topic, id, style }),
-            });
-            
             // Store the topic and style in sessionStorage so the [id] page can start generation
             sessionStorage.setItem(`story-${id}-topic`, topic);
             sessionStorage.setItem(`story-${id}-style`, style);

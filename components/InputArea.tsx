@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Key, Lightbulb, Sparkles } from "lucide-react";
+import { ChevronDown, Key, Lightbulb, Sparkles, ArrowRight } from "lucide-react";
 import { usePostHog } from 'posthog-js/react';
 import { useState } from "react";
 
@@ -129,10 +129,13 @@ export function InputArea({ onSubmit, isLoading }: InputAreaProps) {
                     <button
                         type="submit"
                         disabled={isLoading || !topic.trim()}
-                        className="bg-gray-900 dark:bg-gray-100 hover:bg-gray-800 dark:hover:bg-gray-200 text-white dark:text-gray-900 px-5 md:px-6 py-2.5 rounded-md font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap"
+                        className="bg-gray-900 dark:bg-gray-100 hover:bg-gray-800 dark:hover:bg-gray-200 text-white dark:text-gray-900 px-3 md:px-6 py-2.5 rounded-md font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap"
                     >
-                        <Sparkles className="w-4 h-4" />
-                        Let's learn
+                        <span className="hidden md:flex items-center gap-2">
+                            <Sparkles className="w-4 h-4" />
+                            Let's learn
+                        </span>
+                        <ArrowRight className="w-5 h-5 md:hidden" />
                     </button>
                 </div>
 

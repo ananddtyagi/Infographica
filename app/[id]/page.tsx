@@ -3,59 +3,60 @@
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { Slideshow } from "@/components/Slideshow";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-
-interface Story {
-    id?: string;
-    topic: string;
-    narrative: string;
-    slides: Array<{
-        title: string;
-        content: string;
-        imagePrompt: string;
-        videoPrompt?: string;
-        type: "image" | "video";
-        assetUrl: string;
-        failed?: boolean;
-    }>;
-}
+import { useEffect, useState } from "react";
+import { getStory, saveStory } from "@/lib/client-db";
+import { StoredStory } from "@/lib/types";
 
 export default function StoryPage({ params }: { params: { id: string } }) {
     const router = useRouter();
-    const [story, setStory] = useState<Story | null>(null);
+    const [story, setStory] = useState<StoredStory | null>(null);
     const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
     const [error, setError] = useState(false);
     const [funFacts, setFunFacts] = useState<string[]>([]);
-    const [generationProgress, setGenerationProgress] = useState(0);
-    const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    
+    // We can track progress by checking how many slides have assets
+    const completedSlides = story?.slides.filter(s => s.assetUrl || s.failed).length || 0;
+    const totalSlides = story?.slides.length || 0;
+    // Simple progress estimation
+    const progress = totalSlides > 0 ? Math.round((completedSlides / totalSlides) * 100) : 0;
 
     useEffect(() => {
         initializeStory();
-
-        return () => {
-            // Cleanup polling on unmount
-            if (pollingIntervalRef.current) {
-                clearInterval(pollingIntervalRef.current);
-            }
-        };
     }, [params.id]);
 
     async function initializeStory() {
         // Check if this is a new story generation (topic in sessionStorage)
         const topicKey = `story-${params.id}-topic`;
         const styleKey = `story-${params.id}-style`;
-        const topic = sessionStorage.getItem(topicKey);
-        const style = sessionStorage.getItem(styleKey) || "drawing";
+        
+        // Access sessionStorage only on client
+        const topic = typeof window !== 'undefined' ? sessionStorage.getItem(topicKey) : null;
+        const style = typeof window !== 'undefined' ? sessionStorage.getItem(styleKey) || "drawing" : "drawing";
 
         if (topic) {
             // New story - generate it
-            sessionStorage.removeItem(topicKey); // Clear it so refresh doesn't regenerate
-            sessionStorage.removeItem(styleKey);
-            setLoading(false); // Not loading an existing story, we're generating a new one
+            if (typeof window !== 'undefined') {
+                sessionStorage.removeItem(topicKey);
+                sessionStorage.removeItem(styleKey);
+            }
+            setLoading(false);
             setGenerating(true);
 
-            // Then start generation
+            // Create initial placeholder story structure
+            const initialStory: StoredStory = {
+                id: params.id,
+                topic,
+                style,
+                narrative: "Generating your visual story...",
+                slides: [], // Will be populated by plan
+                createdAt: new Date().toISOString(),
+            };
+            
+            await saveStory(initialStory);
+            setStory(initialStory);
+
+            // Then start full generation
             await generateStory(topic, style);
         } else {
             // Existing story - just load it
@@ -65,107 +66,131 @@ export default function StoryPage({ params }: { params: { id: string } }) {
 
     async function generateStory(topic: string, style: string) {
         try {
-            // Get API key from local storage
             const apiKey = localStorage.getItem("gemini_api_key");
             const videoModel = localStorage.getItem("gemini_video_model") || "veo-3.1-fast-generate-001";
 
-            // 1. Start generating fun facts immediately (fast!)
-            const factsPromise = fetch("/api/fun-facts", {
+            // 1. Start generating fun facts
+            fetch("/api/fun-facts", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ topic, apiKey }),
-            }).then(res => res.json());
-
-            // Handle facts as soon as they arrive
-            factsPromise.then(data => {
+            })
+            .then(res => res.json())
+            .then(data => {
                 if (data.facts) setFunFacts(data.facts);
-            }).catch(err => {
-                console.error("Failed to load facts", err);
-                setFunFacts([
-                    "Preparing your visual story...",
-                    "Gathering information...",
-                    "Creating something amazing..."
-                ]);
-            });
+            })
+            .catch(err => console.error("Failed to load facts", err));
 
-            // 2. Start generating story (this will generate images incrementally)
-            const storyPromise = fetch("/api/generate", {
+            // 2. Generate Story Plan
+            const planResponse = await fetch("/api/generate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ topic, id: params.id, style, apiKey, videoModel }),
-            }).then(res => res.json());
+                body: JSON.stringify({ topic, apiKey, videoModel }),
+            });
 
-            // 3. Start polling for progress while generation happens
-            startProgressPolling();
+            if (!planResponse.ok) throw new Error("Failed to generate story plan");
+            
+            const { story: storyPlan } = await planResponse.json();
+            
+            // Update story with plan (empty assets)
+            const slides = storyPlan.slides.map((slide: any) => ({
+                ...slide,
+                assetUrl: "", // Empty initially
+                failed: false,
+            }));
 
-            // Wait for generation to complete (images done, videos in background)
-            await storyPromise;
+            const updatedStory: StoredStory = {
+                id: params.id,
+                topic: storyPlan.topic,
+                style,
+                narrative: storyPlan.narrative,
+                slides,
+                createdAt: new Date().toISOString(),
+            };
 
-            // 4. Stop polling and load final story
-            stopProgressPolling();
-            await loadStory();
+            await saveStory(updatedStory);
+            setStory(updatedStory);
+
+            // 3. Generate Assets Sequentially
+            for (let i = 0; i < slides.length; i++) {
+                const slide = slides[i];
+                // Skip if already has asset (shouldn't happen here but good practice)
+                if (slide.assetUrl) continue;
+
+                try {
+                    let assetUrl = "";
+                    if (slide.type === "image") {
+                         const res = await fetch("/api/generate-image", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ prompt: slide.imagePrompt, style, apiKey }),
+                        });
+                        const data = await res.json();
+                        if (data.assetUrl) assetUrl = data.assetUrl;
+                    } else if (slide.type === "video") {
+                        // Only generate video if we have API key, otherwise skip or fallback? 
+                        // The plan should ideally respect allowVideo, but let's check key again.
+                        if (apiKey) {
+                             const res = await fetch("/api/generate-video", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ prompt: slide.videoPrompt, style, apiKey, model: videoModel }),
+                            });
+                            const data = await res.json();
+                            if (data.assetUrl) assetUrl = data.assetUrl;
+                        } else {
+                             // Fallback for no key if video was somehow planned
+                             console.warn("Skipping video generation: No API key");
+                        }
+                    }
+
+                    // Update story in DB and State
+                    if (assetUrl) {
+                        updatedStory.slides[i].assetUrl = assetUrl;
+                        await saveStory(updatedStory);
+                        setStory({ ...updatedStory }); // Force re-render
+                    } else {
+                        // Mark failed
+                         updatedStory.slides[i].failed = true;
+                         await saveStory(updatedStory);
+                         setStory({ ...updatedStory });
+                    }
+
+                } catch (err) {
+                    console.error(`Failed to generate asset for slide ${i}`, err);
+                    updatedStory.slides[i].failed = true;
+                    await saveStory(updatedStory);
+                    setStory({ ...updatedStory });
+                }
+            }
+
             setGenerating(false);
 
         } catch (error) {
             console.error("Error generating story:", error);
             setError(true);
             setGenerating(false);
-            stopProgressPolling();
-        }
-    }
-
-    function startProgressPolling() {
-        // Poll every second to check progress
-        pollingIntervalRef.current = setInterval(async () => {
-            await checkGenerationProgress();
-        }, 1000);
-    }
-
-    function stopProgressPolling() {
-        if (pollingIntervalRef.current) {
-            clearInterval(pollingIntervalRef.current);
-            pollingIntervalRef.current = null;
-        }
-    }
-
-    async function checkGenerationProgress() {
-        try {
-            const response = await fetch(`/api/story?id=${params.id}`);
-            if (!response.ok) return;
-
-            const data = await response.json();
-
-            if (data && data.slides && data.slides.length > 0) {
-                // Calculate progress based on image slides that have been generated
-                const imageSlides = data.slides.filter((s: any) => s.type === "image");
-                const generatedImages = imageSlides.filter((s: any) => s.assetUrl && s.assetUrl !== "");
-
-                const progress = imageSlides.length > 0
-                    ? Math.round((generatedImages.length / imageSlides.length) * 100)
-                    : 0;
-
-                setGenerationProgress(progress);
-
-                // If all images are ready, we can show the story
-                if (progress === 100) {
-                    setStory(data);
-                    setGenerating(false); // Stop showing loading screen
-                    stopProgressPolling(); // Stop polling since we have all images
-                }
-            }
-        } catch (error) {
-            console.error("Error checking progress:", error);
         }
     }
 
     async function loadStory() {
         try {
-            const response = await fetch(`/api/story?id=${params.id}`);
-            if (!response.ok) {
-                throw new Error("Failed to load story");
+            // Try loading from IndexedDB first
+            let loadedStory = await getStory(params.id);
+            
+            // If not found, try loading from examples API
+            if (!loadedStory) {
+                const res = await fetch(`/api/examples?id=${params.id}`);
+                if (res.ok) {
+                    loadedStory = await res.json();
+                }
             }
-            const data = await response.json();
-            setStory(data);
+
+            if (loadedStory) {
+                setStory(loadedStory);
+            } else {
+                setError(true);
+            }
             setLoading(false);
         } catch (error) {
             console.error("Error loading story:", error);
@@ -180,8 +205,22 @@ export default function StoryPage({ params }: { params: { id: string } }) {
 
     // Show loading screen while generating or if story has no slides yet
     const hasContent = story && story.slides && story.slides.length > 0;
+    const allAssetsGenerated = story?.slides.every(s => s.assetUrl || s.failed);
 
-    if (loading || (generating && !hasContent)) {
+    // If we are generating, we show loading screen until we have at least the plan? 
+    // Or maybe we want to show the slideshow filling up?
+    // The original behavior showed "Generating..." until images were done.
+    // Let's keep showing loading screen until all images are done for a better experience, 
+    // OR show it until we have the plan, then show a "Generating assets..." overlay?
+    // Original: `if (loading || (generating && !hasContent))` -> This implies if we have content we show it.
+    // But `generating` was true until EVERYTHING was done.
+    // Let's stick to: Show loading screen until we have the full story with images.
+    
+    // Actually, showing progress is nice. LoadingScreen supports fun facts.
+    // If we have progress, we can pass it to LoadingScreen if it supported it.
+    // For now, let's block until finished to match previous behavior roughly.
+    
+    if (loading || (generating && !allAssetsGenerated)) {
         return (
             <LoadingScreen
                 facts={funFacts.length > 0 ? funFacts : [
@@ -199,7 +238,7 @@ export default function StoryPage({ params }: { params: { id: string } }) {
                 <div className="text-center">
                     <h1 className="text-4xl font-bold mb-4">Story Not Found</h1>
                     <p className="text-gray-500 dark:text-gray-400 mb-8">
-                        The story you're looking for doesn't exist or has been removed.
+                        The story you're looking for doesn't exist or has been removed from your local history.
                     </p>
                     <button
                         onClick={() => router.push("/")}
@@ -218,4 +257,3 @@ export default function StoryPage({ params }: { params: { id: string } }) {
         </main>
     );
 }
-
