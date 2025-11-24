@@ -5,10 +5,15 @@ import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 
-const API_KEY = process.env.GEMINI_API_KEY || "";
+const DEFAULT_API_KEY = process.env.GEMINI_API_KEY || "";
 
-// New SDK instance for Story and Video
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+function getAiClient(apiKey?: string) {
+  const key = apiKey || DEFAULT_API_KEY;
+  if (!key) {
+    console.warn("No API Key provided for Gemini Client");
+  }
+  return new GoogleGenAI({ apiKey: key });
+}
 
 // Style guides for different image styles
 export const IMAGE_STYLE_GUIDES = {
@@ -79,13 +84,21 @@ const funFactsSchema = z.object({
 });
 
 // 1. Generate Story and Plan
-export async function generateStory(topic: string): Promise<StoryResponse> {
+export async function generateStory(topic: string, apiKey?: string, allowVideo: boolean = false): Promise<StoryResponse> {
   console.log(`Generating story for topic: ${topic} using gemini-3-pro-preview`);
+  
+  const ai = getAiClient(apiKey);
+  
+  let prompt = `You are an expert educator creating an engaging visual story about: "${topic}". Create a visual story plan.`;
+  
+  if (!allowVideo) {
+    prompt += `\n\nIMPORTANT CONSTRAINT: You are restricted to generating ONLY static images. Do NOT create any slides with type 'video'. All slides must be of type 'image'. Focus on creating rich, detailed image prompts.`;
+  }
 
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-pro-preview",
-      contents: `You are an expert educator creating an engaging visual story about: "${topic}". Create a visual story plan.`,
+      contents: prompt,
       config: {
         responseMimeType: "application/json",
         responseJsonSchema: zodToJsonSchema(storySchema),
@@ -111,8 +124,10 @@ export async function generateStory(topic: string): Promise<StoryResponse> {
   }
 }
 
-export async function generateFunFacts(topic: string): Promise<string[]> {
+export async function generateFunFacts(topic: string, apiKey?: string): Promise<string[]> {
   console.log(`Generating fun facts for topic: ${topic} using gemini-2.5-flash`);
+
+  const ai = getAiClient(apiKey);
 
   try {
     const response = await ai.models.generateContent({
@@ -146,7 +161,9 @@ export async function generateFunFacts(topic: string): Promise<string[]> {
 }
 
 // 2. Generate Image (Gemini 3 Pro Image - Nano Banana Pro)
-export async function generateImage(prompt: string, style?: string): Promise<string> {
+export async function generateImage(prompt: string, style?: string, apiKey?: string): Promise<string> {
+  const ai = getAiClient(apiKey);
+
   try {
     // Append style guide if provided
     let fullPrompt = prompt;
@@ -226,7 +243,9 @@ export async function generateImage(prompt: string, style?: string): Promise<str
 }
 
 // 3. Generate Video (Veo 3.1)
-export async function generateVideo(prompt: string, style?: string): Promise<string> {
+export async function generateVideo(prompt: string, style?: string, apiKey?: string, model: string = "veo-3.1-fast-generate-preview"): Promise<string> {
+  const ai = getAiClient(apiKey);
+  
   // Append style guide if provided
   let fullPrompt = prompt;
   if (style && style in IMAGE_STYLE_GUIDES) {
@@ -236,7 +255,7 @@ export async function generateVideo(prompt: string, style?: string): Promise<str
     }
   }
 
-  const videoModel = "veo-3.1-fast-generate-preview";
+  const videoModel = model;
   console.log(`Generating video for: ${prompt} using ${videoModel} with style: ${style || 'none'}`);
   try {
     // Use the shared ai instance
@@ -297,8 +316,21 @@ export async function generateVideo(prompt: string, style?: string): Promise<str
     console.log(`Generated video saved to ${filePath}`);
     return `/generated/${fileName}`;
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Video generation failed", error);
+    
+    // Check for rate limit error (429 or RESOURCE_EXHAUSTED)
+    if (
+        error?.status === "RESOURCE_EXHAUSTED" || 
+        error?.code === 429 || 
+        error?.error?.code === 429 ||
+        error?.error?.status === "RESOURCE_EXHAUSTED" ||
+        error?.message?.includes("RESOURCE_EXHAUSTED") ||
+        error?.message?.includes("quota")
+    ) {
+        throw new Error("VIDEO_RATE_LIMIT_EXCEEDED");
+    }
+
     throw error; // Propagate error so it's marked as failed in the UI
   }
 }

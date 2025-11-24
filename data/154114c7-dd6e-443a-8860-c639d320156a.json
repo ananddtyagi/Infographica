@@ -1,0 +1,59 @@
+{
+  "topic": "History of Pyramids",
+  "style": "drawing",
+  "narrative": "Journey through millennia to discover how simple mud-brick tombs evolved into the colossal stone wonders of the ancient world. This visual story traces the architectural leap from early Egyptian mastabas to the iconic Giza plateau, and explores how civilizations across the globe, from the Nile to the Mayan jungles, reached for the sky.",
+  "slides": [
+    {
+      "title": "The Humble Beginnings: Mastabas",
+      "content": "Before the towering pyramids, Egyptian pharaohs were buried in low, flat-roofed rectangular structures called mastabas, made of mud brick. These tombs represented the eternal mound of creation and served as the architectural foundation for the grandeur that followed.",
+      "imagePrompt": "Photorealistic reconstruction of an ancient Egyptian mastaba tomb in the desert, low rectangular shape, mud-brick texture, sunset lighting, ancient workers in the background, 8k resolution.",
+      "type": "image",
+      "assetUrl": "/generated/8d32dafa-2ff6-4f58-bf3c-f741e71c7675.png",
+      "failed": false
+    },
+    {
+      "title": "Djoser's Step Pyramid: Reaching Up",
+      "content": "The evolution began when the architect Imhotep stacked six mastabas of decreasing size on top of one another to create the Step Pyramid at Saqqara. This was the first monumental stone structure, symbolizing a giant stairway for the pharaoh's soul to ascend to the heavens.",
+      "imagePrompt": "The Step Pyramid of Djoser at Saqqara, viewing the distinct layers of limestone, ancient scaffolding visible, bright sunlight, clear blue sky, high detail.",
+      "videoPrompt": "A timelapse animation showing the construction of the Step Pyramid, where flat mastaba layers are stacked one by one to form the stepped structure, rising from the desert floor.",
+      "type": "video",
+      "assetUrl": "/generated/7b428d03-de95-4114-b647-22e4c7b35f53.mp4",
+      "failed": false
+    },
+    {
+      "title": "Trial and Error: The Bent Pyramid",
+      "content": "Pharaoh Sneferu's attempt at Dahshur highlights the learning curve of ancient engineering; the pyramid's angle changes abruptly halfway up to prevent collapse. It stands as a unique transitional monument, bridging the gap between step pyramids and true smooth-sided ones.",
+      "imagePrompt": "The Bent Pyramid of Dahshur, emphasizing the change in angle on the sides, smooth limestone casing still visible in parts, golden hour lighting, dramatic shadows.",
+      "type": "image",
+      "assetUrl": "/generated/9d13c333-a6e0-4c82-9a89-e1c6f112da55.png",
+      "failed": false
+    },
+    {
+      "title": "The Giza Plateau: Perfection Achieved",
+      "content": "The Great Pyramid of Giza represents the zenith of pyramid building, originally covered in polished white limestone that shone like a star. Built for Khufu, it remained the tallest man-made structure for over 3,800 years, showcasing unparalleled precision in alignment.",
+      "imagePrompt": "The three Great Pyramids of Giza in their prime, covered in smooth white casing stones, gold capstones (pyramidions) gleaming at the top, lush vegetation near the Nile in the foreground.",
+      "type": "image",
+      "assetUrl": "/generated/66e4f545-7fed-4883-9328-92b42221ea16.png",
+      "failed": false
+    },
+    {
+      "title": "The Engineering Enigma",
+      "content": "How these massive stones were moved remains a subject of debate, with theories ranging from straight long ramps to internal spiral tunnels. Recent evidence suggests workers may have wetted the sand in front of sledges to reduce friction significantly.",
+      "imagePrompt": "Detailed cross-section illustration of the Great Pyramid showing internal chambers and a hypothetical internal spiral ramp system, blueprint style mixed with realism.",
+      "videoPrompt": "A moving infographic showing a team of workers pulling a heavy stone block on a sledge; a worker pours water on the sand in front, and the sledge accelerates smoothly.",
+      "type": "video",
+      "assetUrl": "/generated/6190910c-7da6-41e6-b817-878bb0219504.mp4",
+      "failed": false
+    },
+    {
+      "title": "A Global Phenomenon: Mesoamerica",
+      "content": "Pyramid building wasn't exclusive to Egypt; civilizations like the Maya and Aztecs built massive stepped pyramids across the Atlantic. Unlike Egyptian tombs, these structures, such as El Castillo, were often topped with temples used for living rituals and astronomical events.",
+      "imagePrompt": "El Castillo at Chichen Itza, lush green jungle surroundings, stone steps leading to the temple on top, dramatic lighting emphasizing the serpent shadow effect, 8k resolution.",
+      "type": "image",
+      "assetUrl": "/generated/0763521f-935a-41d0-9ffb-ccd149c7e3d8.png",
+      "failed": false
+    }
+  ],
+  "id": "154114c7-dd6e-443a-8860-c639d320156a",
+  "createdAt": "2025-11-24T03:12:52.025Z"
+}

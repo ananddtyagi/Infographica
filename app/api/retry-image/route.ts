@@ -1,11 +1,11 @@
 
-import { NextRequest, NextResponse } from "next/server";
 import { generateImage } from "@/lib/gemini";
 import { updateSlideAsset } from "@/lib/storage";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
     try {
-        const { storyId, slideIndex, prompt, type } = await request.json();
+        const { storyId, slideIndex, prompt, type, apiKey, videoModel } = await request.json();
 
         if (!storyId || slideIndex === undefined || !prompt) {
             return NextResponse.json(
@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
 
         let assetUrl = "";
         let failed = false;
+        let errorMessage: string | undefined;
 
         try {
             // Determine type based on prompt or pass type from client
@@ -37,25 +38,32 @@ export async function POST(request: NextRequest) {
             if (type === "video") {
                 // Import generateVideo dynamically or ensure it's imported
                 const { generateVideo } = await import("@/lib/gemini");
-                assetUrl = await generateVideo(prompt);
+                assetUrl = await generateVideo(prompt, undefined, apiKey, videoModel);
             } else {
-                assetUrl = await generateImage(prompt);
+                assetUrl = await generateImage(prompt, undefined, apiKey);
             }
 
-        } catch (error) {
+        } catch (error: any) {
             console.error("Retry failed:", error);
             assetUrl = "/placeholder.png";
             failed = true;
+            if (error.message === "VIDEO_RATE_LIMIT_EXCEEDED") {
+                errorMessage = "Oh no! You have reached your video rate limit for the day";
+            }
         }
 
         // Update the stored story
-        const updated = updateSlideAsset(storyId, slideIndex, assetUrl, failed);
+        const updated = updateSlideAsset(storyId, slideIndex, assetUrl, failed, errorMessage);
 
         if (!updated) {
             return NextResponse.json(
                 { error: "Story or slide not found" },
                 { status: 404 }
             );
+        }
+
+        if (errorMessage) {
+             return NextResponse.json({ error: errorMessage }, { status: 429 });
         }
 
         return NextResponse.json({ assetUrl, failed });

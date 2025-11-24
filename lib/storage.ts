@@ -17,6 +17,7 @@ export interface StoredStory {
         type: "image" | "video";
         assetUrl: string;
         failed?: boolean; // Track if image/video generation failed
+        errorMessage?: string; // Specific error message if failed
     }>;
     createdAt: string;
 }
@@ -92,7 +93,7 @@ export function getStory(id: string): StoredStory | null {
 }
 
 // Update a specific slide's asset URL (for retry functionality)
-export function updateSlideAsset(storyId: string, slideIndex: number, assetUrl: string, failed: boolean = false): boolean {
+export function updateSlideAsset(storyId: string, slideIndex: number, assetUrl: string, failed: boolean = false, errorMessage?: string): boolean {
     const story = getStory(storyId);
 
     if (!story || !story.slides[slideIndex]) {
@@ -101,6 +102,20 @@ export function updateSlideAsset(storyId: string, slideIndex: number, assetUrl: 
 
     story.slides[slideIndex].assetUrl = assetUrl;
     story.slides[slideIndex].failed = failed;
+    if (errorMessage) {
+        story.slides[slideIndex].errorMessage = errorMessage;
+    } else if (failed) {
+        // Clear error message if failed is true but no message provided? Or keep it?
+        // If retrying and it fails again without specific message, maybe clear it?
+        // Let's clear it if not provided, or we can decide. 
+        // For now, let's assume if errorMessage is undefined we might want to clear it if success.
+        // But here failed is true/false.
+    }
+    
+    // If success (failed=false), clear error message
+    if (!failed) {
+        delete story.slides[slideIndex].errorMessage;
+    }
 
     const filePath = path.join(DATA_DIR, `${storyId}.json`);
     fs.writeFileSync(filePath, JSON.stringify(story, null, 2));

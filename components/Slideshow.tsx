@@ -12,6 +12,7 @@ interface Slide {
     type: "image" | "video";
     assetUrl: string;
     failed?: boolean;
+    errorMessage?: string;
 }
 
 interface Story {
@@ -98,6 +99,9 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
 
         setRetrying(slideIndex);
         try {
+            const apiKey = localStorage.getItem("gemini_api_key");
+            const videoModel = localStorage.getItem("gemini_video_model");
+
             const response = await fetch("/api/retry-image", {
                 method: "POST",
                 headers: {
@@ -108,10 +112,24 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
                     slideIndex,
                     prompt: slides[slideIndex].type === "video" ? slides[slideIndex].videoPrompt || slides[slideIndex].imagePrompt : slides[slideIndex].imagePrompt,
                     type: slides[slideIndex].type,
+                    apiKey,
+                    videoModel
                 }),
             });
 
             if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                if (response.status === 429 && errorData.error) {
+                    // Update the slide with the error message so it shows inline
+                    const updatedSlides = [...slides];
+                    updatedSlides[slideIndex] = {
+                        ...updatedSlides[slideIndex],
+                        errorMessage: errorData.error,
+                        failed: true
+                    };
+                    setSlides(updatedSlides);
+                    return; // Don't throw, just update UI
+                }
                 throw new Error("Retry failed");
             }
 
@@ -122,9 +140,10 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
                 ...updatedSlides[slideIndex],
                 assetUrl: data.assetUrl,
                 failed: data.failed,
+                errorMessage: undefined // Clear any previous error message
             };
             setSlides(updatedSlides);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error retrying image:", error);
             alert("Failed to retry image generation. Please try again.");
         } finally {
@@ -299,8 +318,8 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
                                     {shouldShowRetry && (
                                         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-[#1a1a1a] z-10">
                                             <div className="text-center">
-                                                <p className="text-gray-600 dark:text-gray-400 mb-4">
-                                                    {currentSlide.type === "video" ? "Video" : "Image"} failed to load
+                                                <p className="text-gray-600 dark:text-gray-400 mb-4 px-4">
+                                                    {currentSlide.errorMessage || `${currentSlide.type === "video" ? "Video" : "Image"} failed to load`}
                                                 </p>
                                                 <button
                                                     onClick={() => handleRetry(currentIndex)}

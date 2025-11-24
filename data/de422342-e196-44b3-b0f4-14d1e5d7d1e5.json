@@ -1,0 +1,64 @@
+{
+  "topic": "The Human Heart",
+  "style": "3d_render",
+  "narrative": "The human heart is a tireless muscle that pumps life through our bodies every second of every day. From its electrical rhythm to the complex network of vessels, it is the engine of the circulatory system. Join us on a journey to understand how this vital organ functions, maintains its rhythm, and keeps us alive.",
+  "slides": [
+    {
+      "title": "The Engine of Life",
+      "content": "The heart is a muscular organ roughly the size of a fist, located slightly left of the center of the chest. Acting as the body's central pump, it beats approximately 100,000 times a day to continuously circulate blood.",
+      "imagePrompt": "A hyper-realistic, translucent human chest cavity visualization showing the heart glowing with vitality in the center, slightly tilted to the left, surrounded by the ribcage and lungs, cinematic lighting, high-end medical illustration style.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/773a5447-e2ff-47bb-a7fc-51d4447be1f1.png",
+      "failed": false
+    },
+    {
+      "title": "Anatomy of Four Chambers",
+      "content": "Internally, the heart is divided into four distinct chambers: the left and right atria on top, and the left and right ventricles on the bottom. This separation ensures that oxygen-rich blood does not mix with oxygen-poor blood, maximizing metabolic efficiency.",
+      "imagePrompt": "A detailed 3D cross-section render of the human heart, clearly distinguishing the Left Atrium, Right Atrium, Left Ventricle, and Right Ventricle with distinct color coding (red for oxygenated, blue for deoxygenated), clean studio lighting.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/5614055b-6e0c-4dc4-85d5-aedebb17465e.png",
+      "failed": false
+    },
+    {
+      "title": "The Flow of Blood",
+      "content": "Blood flow follows a precise loop: deoxygenated blood enters the right side and travels to the lungs, while oxygenated blood returns to the left side to be pumped to the rest of the body. This continuous cycle is crucial for sustaining life.",
+      "imagePrompt": "A schematic diagram showing the double circulatory loop; one loop going to the lungs and back, and the larger loop going to the body and back, with the heart at the intersection, arrows indicating flow direction.",
+      "videoPrompt": "A smooth animation of blood flowing through the heart chambers. Blue particles flow into the right atrium and ventricle then out to the lungs; red particles return to the left atrium and ventricle and pump out to the aorta.",
+      "type": "video",
+      "assetUrl": "/generated/ccc3291e-8e47-46d3-9290-bb0c00767a10.mp4",
+      "failed": false
+    },
+    {
+      "title": "Valves: The One-Way Doors",
+      "content": "To prevent backflow, the heart utilizes four valves that open and close with every beat. These valves act as gatekeepers, ensuring blood moves in only one direction and creating the familiar 'lub-dub' sound of the heartbeat.",
+      "imagePrompt": "A macro, close-up view of a heart valve (mitral or tricuspid) showing the delicate tissue leaflets and chordae tendineae ('heart strings') in high definition, biological texture, dramatic lighting.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/9c8a7a2b-4490-43a8-83f8-f78446b7fe4b.png",
+      "failed": false
+    },
+    {
+      "title": "The Electrical Spark",
+      "content": "The heart beats automatically due to an intrinsic electrical system controlled by the sinoatrial node, the body's natural pacemaker. This electrical impulse travels through the heart walls, triggering muscle contractions in perfect synchronization.",
+      "imagePrompt": "A transparent anatomical heart model with a glowing yellow electrical network highlighted, showing the path of the signal from the upper atrium down to the ventricles, representing a heartbeat signal.",
+      "videoPrompt": "A pulsing animation of a transparent heart. A bright electrical impulse starts at the top right (SA node) and spreads like a wave down through the ventricles, causing the muscle walls to contract rhythmically.",
+      "type": "video",
+      "assetUrl": "/placeholder.png",
+      "failed": true,
+      "errorMessage": "Oh no! You have reached your video rate limit for the day"
+    },
+    {
+      "title": "Fueling the System",
+      "content": "Through the massive aorta, the heart propels oxygen-rich blood to every cell in the body. This delivery system provides essential nutrients and oxygen while capillaries collect waste products to be brought back for filtration.",
+      "imagePrompt": "A zoomed-out view of the full human circulatory system, showing the heart as a glowing core with a vast, intricate network of red arteries and blue veins branching out to the limbs and brain, black background, neon aesthetic.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/5ebb4144-b9c5-440e-a60f-50818199d070.png",
+      "failed": false
+    }
+  ],
+  "id": "de422342-e196-44b3-b0f4-14d1e5d7d1e5",
+  "createdAt": "2025-11-24T03:17:03.117Z"
+}

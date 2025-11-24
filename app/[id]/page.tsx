@@ -65,11 +65,15 @@ export default function StoryPage({ params }: { params: { id: string } }) {
 
     async function generateStory(topic: string, style: string) {
         try {
+            // Get API key from local storage
+            const apiKey = localStorage.getItem("gemini_api_key");
+            const videoModel = localStorage.getItem("gemini_video_model") || "veo-3.1-fast-generate-001";
+
             // 1. Start generating fun facts immediately (fast!)
             const factsPromise = fetch("/api/fun-facts", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ topic }),
+                body: JSON.stringify({ topic, apiKey }),
             }).then(res => res.json());
 
             // Handle facts as soon as they arrive
@@ -88,7 +92,7 @@ export default function StoryPage({ params }: { params: { id: string } }) {
             const storyPromise = fetch("/api/generate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ topic, id: params.id, style }),
+                body: JSON.stringify({ topic, id: params.id, style, apiKey, videoModel }),
             }).then(res => res.json());
 
             // 3. Start polling for progress while generation happens

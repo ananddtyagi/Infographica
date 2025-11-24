@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronDown, Sparkles } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown, Key, Lightbulb, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 export const IMAGE_STYLES = {
@@ -54,12 +55,52 @@ export function InputArea({ onSubmit, isLoading }: InputAreaProps) {
     const [topic, setTopic] = useState("");
     const [selectedStyle, setSelectedStyle] = useState<ImageStyle>("drawing");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [hasApiKey, setHasApiKey] = useState(false);
+
+    // Check for API key on mount and when local storage changes
+    useState(() => {
+        if (typeof window !== 'undefined') {
+            setHasApiKey(!!localStorage.getItem("gemini_api_key"));
+
+            // Optional: Listen for storage changes to update state if key is added elsewhere
+            const handleStorageChange = () => {
+                setHasApiKey(!!localStorage.getItem("gemini_api_key"));
+            };
+            window.addEventListener('storage', handleStorageChange);
+            // Also listen for our custom event to re-check key after modal closes (if we added that logic)
+            // Ideally KeySettings would trigger an event when key is saved.
+            // For now, just checking on render/mount is a start, but better to use an interval or event.
+
+            // A simple poll or event listener for custom 'key-updated' event would be robust.
+            // Let's add a custom event dispatch in KeySettings when saved.
+        }
+    });
+
+    // Better approach: Poll for key every second or listen to custom event
+    useState(() => {
+        // Initial check
+        if (typeof window !== 'undefined') {
+            setHasApiKey(!!localStorage.getItem("gemini_api_key"));
+        }
+
+        const interval = setInterval(() => {
+            if (typeof window !== 'undefined') {
+                setHasApiKey(!!localStorage.getItem("gemini_api_key"));
+            }
+        }, 1000);
+
+        return () => clearInterval(interval);
+    });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (topic.trim()) {
             onSubmit(topic, selectedStyle);
         }
+    };
+
+    const openSettings = () => {
+        window.dispatchEvent(new Event('open-key-settings'));
     };
 
     return (
@@ -125,6 +166,33 @@ export function InputArea({ onSubmit, isLoading }: InputAreaProps) {
                     </div>
                 </div>
             </form>
+
+            {/* Hint for API Key */}
+            <AnimatePresence>
+                {!hasApiKey && topic.length > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{ duration: 0.5 }}
+                        className="mt-4 flex justify-center"
+                    >
+                        <button
+                            onClick={openSettings}
+                            className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-gray-800/50 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg transition-colors group text-left max-w-md"
+                        >
+                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-yellow-600 dark:text-yellow-400">
+                                <Lightbulb className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                    Want to use your own API key? Click the key icon <Key className="w-3 h-3 inline mx-0.5" /> to use your personal Gemini quota for all generation.
+                                </p>
+                            </div>
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

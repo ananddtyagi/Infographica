@@ -1,19 +1,22 @@
-import { NextRequest, NextResponse } from "next/server";
-import { generateStory, generateImage, generateVideo } from "@/lib/gemini";
+import { generateImage, generateStory, generateVideo } from "@/lib/gemini";
 import { saveStory, updateSlideAsset } from "@/lib/storage";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
     try {
-        const { topic, id, style } = await request.json();
+        const { topic, id, style, apiKey, videoModel } = await request.json();
 
         if (!topic) {
             return NextResponse.json({ error: "Topic is required" }, { status: 400 });
         }
 
         console.log("Generating story for topic:", topic, "with ID:", id, "and style:", style);
+        const allowVideo = !!apiKey;
+        console.log(`User provided API Key: ${allowVideo}. Video generation allowed: ${allowVideo}. Model: ${videoModel}`);
 
         // Step 1: Generate the story structure
-        const storyPlan = await generateStory(topic);
+        // If no API key provided, enforce image-only generation to save rate limits
+        const storyPlan = await generateStory(topic, apiKey, allowVideo);
 
         console.log(`Generated story plan with ${storyPlan.slides.length} slides`);
 
@@ -43,7 +46,7 @@ export async function POST(request: NextRequest) {
             if (slide.type === "image") {
                 try {
                     console.log(`Generating image ${i + 1}/${storyPlan.slides.length}: ${slide.title}`);
-                    const assetUrl = await generateImage(slide.imagePrompt, style);
+                    const assetUrl = await generateImage(slide.imagePrompt, style, apiKey);
                     updateSlideAsset(storyId, i, assetUrl, false);
                     console.log(`✓ Image ${i + 1} complete`);
                 } catch (error) {
@@ -56,27 +59,38 @@ export async function POST(request: NextRequest) {
         console.log("All images generated, returning story");
 
         // Step 4: Generate videos in background (don't wait for response)
-        setImmediate(async () => {
-            console.log("Starting background video generation...");
-            for (let i = 0; i < storyPlan.slides.length; i++) {
-                const slide = storyPlan.slides[i];
-                
-                if (slide.type === "video" && slide.videoPrompt) {
-                    try {
-                        console.log(`Generating video ${i + 1}: ${slide.title}`);
-                        const assetUrl = await generateVideo(slide.videoPrompt, style);
-                        updateSlideAsset(storyId, i, assetUrl, false);
-                        console.log(`✓ Video ${i + 1} complete`);
-                    } catch (error) {
-                        console.error(`Failed to generate video for slide ${i}: ${slide.title}`, error);
-                        updateSlideAsset(storyId, i, "/placeholder.png", true);
+        // Only if allowVideo is true (which implies apiKey is present)
+        if (allowVideo) {
+            setImmediate(async () => {
+                console.log("Starting background video generation...");
+                for (let i = 0; i < storyPlan.slides.length; i++) {
+                    const slide = storyPlan.slides[i];
+                    
+                    if (slide.type === "video" && slide.videoPrompt) {
+                        try {
+                            console.log(`Generating video ${i + 1}: ${slide.title}`);
+                            const assetUrl = await generateVideo(slide.videoPrompt, style, apiKey, videoModel);
+                            updateSlideAsset(storyId, i, assetUrl, false);
+                            console.log(`✓ Video ${i + 1} complete`);
+                        } catch (error: any) {
+                            console.error(`Failed to generate video for slide ${i}: ${slide.title}`, error);
+                            
+                            let errorMessage;
+                            if (error.message === "VIDEO_RATE_LIMIT_EXCEEDED") {
+                                errorMessage = "Oh no! You have reached your video rate limit for the day";
+                            }
+
+                            updateSlideAsset(storyId, i, "/placeholder.png", true, errorMessage);
+                        }
                     }
                 }
-            }
-            console.log("All videos generated");
-        });
+                console.log("All videos generated");
+            });
+        } else {
+             console.log("Video generation skipped (no API key provided)");
+        }
 
-        // Return story with images ready (videos will be generated in background)
+        // Return story with images ready (videos will be generated in background if allowed)
         return NextResponse.json({ id: storyId });
     } catch (error: any) {
         console.error("Generation failed:", error);

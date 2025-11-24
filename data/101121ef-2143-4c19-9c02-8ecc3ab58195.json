@@ -1,0 +1,73 @@
+{
+  "topic": "The Surface of Mars",
+  "style": "photorealistic",
+  "narrative": "Step onto the rusty, rugged terrain of the Red Planet. Mars offers a landscape of extremes, from volcanoes towering three times higher than Everest to canyons that would swallow the Grand Canyon whole, all buried under a thin atmosphere and ancient secrets of water.",
+  "slides": [
+    {
+      "title": "A World of Rust",
+      "content": "Mars is known as the Red Planet because its surface is covered in iron oxide, effectively rust dust. This fine regolith blankets a rocky, desert-like landscape under a pinkish-hued sky.",
+      "imagePrompt": "A high-resolution, photorealistic landscape of the Martian surface featuring rusty red soil, scattered basalt rocks, and distant mountains under a dusty pink sky.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/f44cdf0e-87eb-430e-acf5-1086ee0b4d38.png",
+      "failed": false
+    },
+    {
+      "title": "Olympus Mons: The Giant",
+      "content": "Standing 13.6 miles high, Olympus Mons is the largest volcano in the solar system. It is a shield volcano with a base the size of Arizona, created by lava flowing slowly over millions of years.",
+      "imagePrompt": "A dramatic aerial view of Olympus Mons on Mars, depicting the massive shield volcano rising above the atmosphere with a large caldera at the summit, realistic lighting.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/d6a34ad1-73f3-4f53-af79-2798f00f12ed.png",
+      "failed": false
+    },
+    {
+      "title": "Valles Marineris",
+      "content": "This massive canyon system stretches 2,500 miles across the planet's equator. It is up to 4 miles deep, making the Grand Canyon look like a mere scratch in comparison.",
+      "imagePrompt": "",
+      "videoPrompt": "A cinematic flyover video moving through the deep, steep-walled canyons of Valles Marineris, showcasing red stratified rock layers and the immense scale of the geological rift.",
+      "type": "video",
+      "assetUrl": "/generated/f9ad45c9-9bd2-4b20-8a67-6f2d198798fd.mp4",
+      "failed": false
+    },
+    {
+      "title": "Dust Storms",
+      "content": "Mars experiences dust storms that can grow large enough to encompass the entire planet. These storms can block out the sun for weeks, posing a major challenge for solar-powered rovers.",
+      "imagePrompt": "",
+      "videoPrompt": "A time-lapse animation of a massive wall of red dust sweeping across a rocky Martian plain, gradually obscuring the sun and turning the environment dark and hazy.",
+      "type": "video",
+      "assetUrl": "/placeholder.png",
+      "failed": true,
+      "errorMessage": "you have reached your video rate limit for the day"
+    },
+    {
+      "title": "The Polar Ice Caps",
+      "content": "Like Earth, Mars has ice caps at its north and south poles. These caps are made of water ice and frozen carbon dioxide (dry ice), which expand and shrink with the Martian seasons.",
+      "imagePrompt": "A detailed satellite-style view of the Martian north pole, showing bright white spiral patterns of ice contrasting sharply against the surrounding deep red terrain.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/ab029b20-261c-41c4-b326-16f75eb3b99a.png",
+      "failed": false
+    },
+    {
+      "title": "Evidence of Ancient Water",
+      "content": "Dried-up riverbeds and minerals formed in water suggest Mars was once warm and wet. Rovers have found smooth, rounded pebbles that could only have been shaped by flowing currents.",
+      "imagePrompt": "A close-up ground view of a dry river channel on Mars, featuring sediment layers and round pebbles, suggesting a history of flowing water, photorealistic style.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/e62dfbb0-d86b-42ad-8cc3-028efe4363e6.png",
+      "failed": false
+    },
+    {
+      "title": "Robotic Explorers",
+      "content": "We explore this harsh surface using rovers like Perseverance and Curiosity. These robotic geologists drill into rocks and analyze soil samples to search for signs of ancient microbial life.",
+      "imagePrompt": "An illustration of the Perseverance rover on the surface of Mars, extending its robotic arm to examine a large rock, with the crater rim visible in the background.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/6627e77a-460d-495b-b6cb-6678b41f70ac.png",
+      "failed": false
+    }
+  ],
+  "id": "101121ef-2143-4c19-9c02-8ecc3ab58195",
+  "createdAt": "2025-11-24T03:16:48.477Z"
+}

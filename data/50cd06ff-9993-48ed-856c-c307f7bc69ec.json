@@ -1,0 +1,63 @@
+{
+  "topic": "The Journey of a Coffee Bean",
+  "style": "flat_art",
+  "narrative": "Discover the fascinating odyssey of your morning brew, tracing the life of a coffee bean from a seedling on a tropical farm to the aromatic liquid in your cup. This story explores the meticulous stages of cultivation, harvesting, processing, and roasting that unlock the complex flavors we love.",
+  "slides": [
+    {
+      "title": "The Birth of the Bean",
+      "content": "Coffee begins its life as a seed inside a cherry growing on the Coffea plant. These plants thrive in the 'Bean Belt,' a tropical band around the equator that provides the perfect mix of rain, shade, and altitude.",
+      "imagePrompt": "Close-up macro photography of a lush green coffee branch featuring clusters of bright red ripe coffee cherries and white blossoms, set against a backdrop of misty tropical mountains in Colombia, soft natural morning light.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/5198a6bf-b523-4f76-8bdc-b628865a4133.png",
+      "failed": false
+    },
+    {
+      "title": "The Selective Harvest",
+      "content": "Quality coffee requires careful harvesting, often done by hand to ensure only the ripest cherries are picked. Farmers navigate steep slopes, selecting fruit at the peak of maturity for the best flavor profile.",
+      "imagePrompt": "A cinematic shot of a farmer's weathered hands carefully plucking a single deep red coffee cherry from a bush, surrounded by green leaves, with a wicker basket strapped to their waist, sunlight filtering through the canopy.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/1761cbf6-14e0-424e-be2a-f89c0007ab72.png",
+      "failed": false
+    },
+    {
+      "title": "Processing: Revealing the Seed",
+      "content": "Once picked, the fruit flesh is removed to reveal the green beans inside, which are then fermented and dried. This crucial step prevents spoilage and begins to develop the bean's inherent distinct flavor notes.",
+      "imagePrompt": "Wide-angle aerial view of a coffee drying patio where raw green beans are spread out in neat rows under the sun, with workers using wooden rakes to turn them over, vibrant earth tones.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/c958edb7-8b59-488c-931d-05ed08c15b13.png",
+      "failed": false
+    },
+    {
+      "title": "The Art of Roasting",
+      "content": "Green beans are shipped to roasters where they are heated to high temperatures. The heat triggers the Maillard reaction, turning the beans brown and unlocking over 800 aromatic compounds.",
+      "imagePrompt": "Inside a professional coffee drum roaster, close-up of beans tumbling and turning from green to golden brown to dark brown, smoke wisps rising, dynamic lighting emphasizing the heat.",
+      "videoPrompt": "A slow-motion close-up loop of coffee beans tumbling inside a rotating metal drum, changing color from pale green to rich brown, with smoke swirling and silver skin chaff flying off.",
+      "type": "video",
+      "assetUrl": "/generated/dffc6514-1efd-4e13-9f50-0067daa85ed6.mp4",
+      "failed": false
+    },
+    {
+      "title": "Brewing the Nectar",
+      "content": "The roasted beans are ground and combined with hot water to extract the solubles—the oils and flavors that make up the beverage. Precision in grind size and water temperature is key to a balanced cup.",
+      "imagePrompt": "High-resolution shot of a glass pour-over coffee maker, hot water being poured from a gooseneck kettle onto fresh dark grounds, creating a blooming golden-brown foam, steam rising against a dark background.",
+      "videoPrompt": "Close-up of hot water hitting fresh coffee grounds in a filter, showing the 'bloom' where bubbles release carbon dioxide and dark liquid begins to drip slowly into the glass carafe below.",
+      "type": "video",
+      "assetUrl": "/generated/60479bb1-3174-43c1-8956-0ef0d26f718d.mp4",
+      "failed": false
+    },
+    {
+      "title": "The Final Cup",
+      "content": "The journey concludes in your hands. A simple cup of coffee represents the hard work of farmers, processors, and roasters, connecting people across the globe through a shared ritual.",
+      "imagePrompt": "A warm, cozy scene featuring a ceramic mug of steaming black coffee sitting on a rustic wooden table next to a burlap sack and scattered roasted beans, warm ambient lighting evoking a sense of comfort.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/713d4822-bee6-4c0b-bb84-aeed04bf2f80.png",
+      "failed": false
+    }
+  ],
+  "id": "50cd06ff-9993-48ed-856c-c307f7bc69ec",
+  "createdAt": "2025-11-24T03:14:31.978Z"
+}

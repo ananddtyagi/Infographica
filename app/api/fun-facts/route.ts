@@ -3,7 +3,7 @@ import { generateFunFacts } from "@/lib/gemini";
 
 export async function POST(request: Request) {
     try {
-        const { topic } = await request.json();
+        const { topic, apiKey } = await request.json();
 
         if (!topic) {
             return NextResponse.json(
@@ -12,7 +12,7 @@ export async function POST(request: Request) {
             );
         }
 
-        const facts = await generateFunFacts(topic);
+        const facts = await generateFunFacts(topic, apiKey);
         return NextResponse.json({ facts });
     } catch (error) {
         console.error("Error generating fun facts:", error);

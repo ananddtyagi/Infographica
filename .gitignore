@@ -47,4 +47,3 @@ models.json
 debug-output.txt
 
 # Generated content (optional, but usually we don't commit generated assets if they are large or transient)
-public/generated/

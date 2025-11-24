@@ -1,0 +1,63 @@
+{
+  "topic": "The History of Thanksgiving",
+  "style": "free_style",
+  "narrative": "Explore the origins of Thanksgiving, moving beyond the myths to understand the interactions between the Wampanoag people and the English settlers, the hardships of the Mayflower voyage, the famous 1621 harvest feast, and how Abraham Lincoln officially established the holiday in 1863.",
+  "slides": [
+    {
+      "title": "The Wampanoag People",
+      "content": "Long before the arrival of European settlers, the Wampanoag people inhabited the land that would become Massachusetts. They had a complex society, established agricultural practices, and a deep connection to the seasons.",
+      "imagePrompt": "A realistic, historical illustration of a 17th-century Wampanoag village in late summer, showing longhouses (wetus), people weaving nets, and tending to crops of corn, beans, and squash, bathed in warm sunlight.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/cd8bfe3f-bb34-4d1c-8dd8-a27f70c84e94.png",
+      "failed": false
+    },
+    {
+      "title": "The Mayflower Voyage",
+      "content": "In September 1620, the Mayflower departed England with 102 passengers seeking religious freedom and a new life. The crossing was perilous, lasting 66 days through treacherous Atlantic storms.",
+      "imagePrompt": "A cinematic view of the wooden Mayflower ship tossing on dark, rough Atlantic waves under a stormy sky, 17th-century style.",
+      "videoPrompt": "A 5-second animation of the Mayflower ship rocking violently against massive ocean waves during a storm, rain pouring down.",
+      "type": "video",
+      "assetUrl": "/generated/755661a0-5f7e-4fdf-998d-b62c83edc6e3.mp4",
+      "failed": false
+    },
+    {
+      "title": "Survival and Alliance",
+      "content": "After a brutal first winter where half the settlers died, they formed an alliance with the Wampanoag. Tisquantum (Squanto) taught the survivors vital skills like planting corn using fish for fertilizer.",
+      "imagePrompt": "A detailed historical scene showing Tisquantum demonstrating how to bury fish with corn seeds in the soil to a group of Pilgrim men, with a forest backdrop.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/02e31efc-9a1f-47e9-817f-9848109eb707.png",
+      "failed": false
+    },
+    {
+      "title": "The 1621 Harvest Feast",
+      "content": "To celebrate their first successful harvest, the settlers and the Wampanoag shared a three-day feast. The menu likely included venison, wildfowl, seafood, and corn, rather than the pies and potatoes common today.",
+      "imagePrompt": "A wide-angle painting style image of a long outdoor wooden table filled with venison, roasted birds, and shellfish; Wampanoag and Pilgrim figures eating and conversing together in an autumn forest clearing.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/f2738459-35da-4c60-8dea-8e8a0475ee87.png",
+      "failed": false
+    },
+    {
+      "title": "Becoming a National Holiday",
+      "content": "Thanksgiving was celebrated sporadically until 1863, when President Abraham Lincoln proclaimed a national day of Thanksgiving. He aimed to heal the wounds of the nation during the height of the Civil War.",
+      "imagePrompt": "Abraham Lincoln sitting at a vintage desk in the 1860s, writing the Thanksgiving Proclamation with a quill by candlelight, looking contemplative.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/e95d1134-48bf-40d1-8653-dd536506e219.png",
+      "failed": false
+    },
+    {
+      "title": "Modern Traditions",
+      "content": "Today, Thanksgiving has evolved into a day centered on family, gratitude, and food. While traditions like turkey dinners and parades are modern additions, the core spirit of gathering remains.",
+      "imagePrompt": "A warm, cozy modern dining room scene with a diverse family holding hands around a table featuring a large roasted turkey, soft lighting, and autumn decorations.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/382ca631-8a1a-416a-94e6-57c780fc76fc.png",
+      "failed": false
+    }
+  ],
+  "id": "43ba757c-38c3-48dd-82a2-e4aac3bf96d2",
+  "createdAt": "2025-11-24T03:17:18.674Z"
+}
