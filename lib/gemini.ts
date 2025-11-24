@@ -161,7 +161,7 @@ export async function generateFunFacts(topic: string, apiKey?: string): Promise<
 }
 
 // 2. Generate Image (Gemini 3 Pro Image - Nano Banana Pro)
-export async function generateImage(prompt: string, style?: string, apiKey?: string): Promise<string> {
+export async function generateImage(prompt: string, style?: string, apiKey?: string, model: string = "gemini-3-pro-image-preview"): Promise<string> {
   const ai = getAiClient(apiKey);
 
   try {
@@ -174,10 +174,29 @@ export async function generateImage(prompt: string, style?: string, apiKey?: str
       }
     }
     
-    console.log(`Generating image for: ${prompt} using gemini-3-pro-image-preview with style: ${style || 'none'}`);
+    console.log(`Generating image for: ${prompt} using ${model} with style: ${style || 'none'}`);
 
+    if (model.startsWith("imagen-")) {
+      const response = await ai.models.generateImages({
+        model: model,
+        prompt: fullPrompt,
+        config: {
+          numberOfImages: 1,
+          aspectRatio: "16:9",
+        },
+      });
+
+      if (response.generatedImages && response.generatedImages.length > 0) {
+        const imgBytes = response.generatedImages[0].image.imageBytes;
+        // imgBytes is usually a base64 string in the response
+        return `data:image/png;base64,${imgBytes}`;
+      }
+      throw new Error("No image generated");
+    }
+
+    // Fallback / Original for gemini-3-pro-image-preview
     const response = await ai.models.generateContent({
-      model: "gemini-3-pro-image-preview",
+      model: model, // use the passed model even if it falls through (likely gemini-3-pro-image-preview)
       contents: fullPrompt,
       config: {
         imageConfig: {
@@ -186,6 +205,10 @@ export async function generateImage(prompt: string, style?: string, apiKey?: str
         }
       }
     });
+
+    if (!response) {
+      throw new Error("No response from Gemini");
+    }
 
     // Iterate through parts to find inline data
     const candidates = response.candidates;
@@ -208,18 +231,7 @@ export async function generateImage(prompt: string, style?: string, apiKey?: str
 
   } catch (error) {
     console.error("Image generation failed", error);
-
-    // Fallback to placeholder
-    try {
-      const response = await fetch(`https://placehold.co/600x400/png?text=${encodeURIComponent(prompt.substring(0, 20))}`);
-      const buffer = await response.arrayBuffer();
-      const base64 = Buffer.from(buffer).toString('base64');
-      return `data:image/png;base64,${base64}`;
-    } catch (fallbackError) {
-      console.error("Fallback image generation also failed", fallbackError);
-      // Return a minimal transparent pixel or standard placeholder as data URL
-      return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
-    }
+    throw error;
   }
 }
 

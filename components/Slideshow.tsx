@@ -1,10 +1,10 @@
 "use client";
 
+import { saveStory } from "@/lib/client-db";
+import { Slide, StoredStory } from "@/lib/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Home, RotateCw } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { StoredStory, Slide } from "@/lib/types";
-import { saveStory } from "@/lib/client-db";
 
 interface SlideMediaProps {
     slide: Slide;
@@ -22,23 +22,23 @@ function SlideMedia({ slide, onRetry, isRetrying }: SlideMediaProps) {
     useEffect(() => {
         // We rely on the parent keying to reset state on URL/Slide changes.
         // So here we just handle the timeout logic.
-        
+
         if (slide.assetUrl && slide.type === "image") {
             // Only set timeout if not already loaded (race condition protection)
             if (!isLoadedRef.current) {
-                 if (timerRef.current) clearTimeout(timerRef.current);
-                 
-                 timerRef.current = setTimeout(() => {
-                     if (!isLoadedRef.current) {
-                         setHasError(true);
-                         setIsLoading(false);
-                     }
-                 }, 10000);
+                if (timerRef.current) clearTimeout(timerRef.current);
+
+                timerRef.current = setTimeout(() => {
+                    if (!isLoadedRef.current) {
+                        setHasError(true);
+                        setIsLoading(false);
+                    }
+                }, 10000);
             }
         } else if (!slide.assetUrl) {
             // If no asset, we are technically 'loading' (generating), but not waiting for an image load event.
             // We don't set a timeout here because generation might take longer than 10s and is handled by parent/backend.
-            setIsLoading(false); 
+            setIsLoading(false);
         }
 
         return () => {
@@ -60,7 +60,7 @@ function SlideMedia({ slide, onRetry, isRetrying }: SlideMediaProps) {
     };
 
     const isGenerating = (!slide.assetUrl || slide.assetUrl === "") && !slide.failed;
-    
+
     // Show retry if:
     // 1. Explicit failure (slide.failed)
     // 2. Local error (hasError)
@@ -68,10 +68,12 @@ function SlideMedia({ slide, onRetry, isRetrying }: SlideMediaProps) {
     const isPlaceholder = !slide.assetUrl || slide.assetUrl === "" || slide.assetUrl === "/placeholder.png" || slide.failed || hasError;
     const shouldShowRetry = isPlaceholder && !isGenerating;
 
+    const isOverloaded = slide.errorMessage?.includes("503") || slide.errorMessage?.includes("overloaded") || slide.errorMessage?.includes("UNAVAILABLE");
+
     // If generating, we want to show the specific generating UI, not the "image loading" spinner.
     // "isLoading" tracks the image tag loading. 
     // If assetUrl is empty, isLoading is set to false by effect, but we render the "Generating" UI based on isGenerating.
-    
+
     return (
         <div className="w-full h-full relative">
             {slide.type === "video" ? (
@@ -123,18 +125,29 @@ function SlideMedia({ slide, onRetry, isRetrying }: SlideMediaProps) {
             {/* Retry Overlay */}
             {shouldShowRetry && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-[#1a1a1a] z-10">
-                    <div className="text-center">
-                        <p className="text-gray-600 dark:text-gray-400 mb-4 px-4">
+                    <div className="text-center p-6">
+                        <p className="text-gray-600 dark:text-gray-400 mb-4">
                             {slide.errorMessage || `${slide.type === "video" ? "Video" : "Image"} failed to load`}
                         </p>
-                        <button
-                            onClick={onRetry}
-                            disabled={isRetrying}
-                            className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-500 dark:bg-gray-100 dark:hover:bg-gray-200 dark:disabled:bg-gray-600 text-white dark:text-gray-900 rounded-md font-medium flex items-center gap-2 transition-colors mx-auto"
-                        >
-                            <RotateCw className={`w-5 h-5 ${isRetrying ? "animate-spin" : ""}`} />
-                            {isRetrying ? "Retrying..." : "Retry Generation"}
-                        </button>
+                        <div className="flex flex-col gap-3 items-center">
+                            <button
+                                onClick={onRetry}
+                                disabled={isRetrying}
+                                className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-500 dark:bg-gray-100 dark:hover:bg-gray-200 dark:disabled:bg-gray-600 text-white dark:text-gray-900 rounded-md font-medium flex items-center gap-2 transition-colors"
+                            >
+                                <RotateCw className={`w-5 h-5 ${isRetrying ? "animate-spin" : ""}`} />
+                                {isRetrying ? "Retrying..." : "Retry Generation"}
+                            </button>
+
+                            {isOverloaded && (
+                                <button
+                                    onClick={() => window.dispatchEvent(new Event('open-key-settings'))}
+                                    className="text-sm text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1"
+                                >
+                                    Model overloaded? Try a different model
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
@@ -145,13 +158,39 @@ function SlideMedia({ slide, onRetry, isRetrying }: SlideMediaProps) {
 interface SlideshowProps {
     story: StoredStory;
     onReset: () => void;
+    loadingFacts?: string[];
 }
 
-export function Slideshow({ story, onReset }: SlideshowProps) {
+export function Slideshow({ story, onReset, loadingFacts = [] }: SlideshowProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     // Initialize slides from props, but keep local state for optimistic updates during retry
     const [slides, setSlides] = useState(story.slides);
     const [retrying, setRetrying] = useState<number | null>(null);
+
+    // Loading state for facts cycling
+    const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
+
+    const presets = [
+        "Researching the topic...",
+        "Looking through my files...",
+        "Making some images..."
+    ];
+
+    const loadingMessages = [...presets, ...loadingFacts];
+
+    useEffect(() => {
+        // Reset index when messages change to avoid out of bounds
+        setLoadingMessageIndex(prev => prev % loadingMessages.length);
+    }, [loadingMessages.length]);
+
+    useEffect(() => {
+        if (!slides || slides.length === 0) {
+            const interval = setInterval(() => {
+                setLoadingMessageIndex(prev => (prev + 1) % loadingMessages.length);
+            }, 5000); // Cycle every 5s
+            return () => clearInterval(interval);
+        }
+    }, [slides, loadingMessages.length]);
 
     // Update local slides when prop changes (e.g. parent finishes generation)
     useEffect(() => {
@@ -194,32 +233,36 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
         try {
             const apiKey = localStorage.getItem("gemini_api_key");
             const videoModel = localStorage.getItem("gemini_video_model");
+            const imageModel = localStorage.getItem("gemini_image_model") || "gemini-3-pro-image-preview";
             const style = story.style || "drawing"; // fallback style
             const slide = slides[slideIndex];
 
             let assetUrl = "";
-            
+
             if (slide.type === "image") {
-                 const res = await fetch("/api/generate-image", {
+                const res = await fetch("/api/generate-image", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ prompt: slide.imagePrompt, style, apiKey }),
+                    body: JSON.stringify({ prompt: slide.imagePrompt, style, apiKey, model: imageModel }),
                 });
-                if (!res.ok) throw new Error("Failed to generate image");
+                if (!res.ok) {
+                    const errorData = await res.json().catch(() => ({}));
+                    throw new Error(errorData.details || errorData.error || "Failed to generate image");
+                }
                 const data = await res.json();
                 assetUrl = data.assetUrl;
             } else if (slide.type === "video") {
-                 const res = await fetch("/api/generate-video", {
+                const res = await fetch("/api/generate-video", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ prompt: slide.videoPrompt, style, apiKey, model: videoModel }),
                 });
                 if (!res.ok) {
-                     const errorData = await res.json().catch(() => ({}));
-                     if (res.status === 429 || errorData.error === "VIDEO_RATE_LIMIT_EXCEEDED") {
-                         throw new Error("Video rate limit exceeded");
-                     }
-                     throw new Error("Failed to generate video");
+                    const errorData = await res.json().catch(() => ({}));
+                    if (res.status === 429 || errorData.error === "VIDEO_RATE_LIMIT_EXCEEDED") {
+                        throw new Error("Video rate limit exceeded");
+                    }
+                    throw new Error("Failed to generate video");
                 }
                 const data = await res.json();
                 assetUrl = data.assetUrl;
@@ -234,7 +277,7 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
                     errorMessage: undefined
                 };
                 setSlides(updatedSlides);
-                
+
                 // Save to DB
                 const updatedStory = { ...story, slides: updatedSlides };
                 await saveStory(updatedStory);
@@ -261,9 +304,29 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
     // Safety check: if no slides yet, show loading state
     if (!currentSlide || slides.length === 0) {
         return (
-            <div className="relative w-full min-h-screen bg-white dark:bg-[#0a0a0a] flex flex-col items-center justify-center">
-                <div className="w-10 h-10 border-2 border-gray-200 dark:border-gray-800 border-t-gray-900 dark:border-t-gray-100 rounded-full animate-spin mb-4"></div>
-                <p className="text-gray-600 dark:text-gray-400">Loading your infographic...</p>
+            <div className="relative w-full min-h-screen bg-white dark:bg-[#0a0a0a] flex flex-col items-center justify-center p-4">
+                <div className="w-16 h-16 border-4 border-gray-200 dark:border-gray-800 border-t-purple-600 dark:border-t-purple-400 rounded-full animate-spin mb-8"></div>
+
+                <div className="max-w-md text-center">
+                    <AnimatePresence mode="wait">
+                        <motion.p
+                            key={loadingMessageIndex}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.3 }}
+                            className="text-lg md:text-xl text-gray-600 dark:text-gray-300 font-medium"
+                        >
+                            {loadingMessages[loadingMessageIndex]}
+                        </motion.p>
+                    </AnimatePresence>
+
+                    {loadingFacts.length === 0 && (
+                        <p className="text-sm text-gray-400 dark:text-gray-600 mt-4 animate-pulse">
+                            Starting research...
+                        </p>
+                    )}
+                </div>
             </div>
         );
     }
@@ -323,9 +386,9 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
                                     transition={{ duration: 0.2 }}
                                     className="w-full h-full"
                                 >
-                                    <SlideMedia 
+                                    <SlideMedia
                                         key={`${currentIndex}-${currentSlide.assetUrl || 'empty'}`}
-                                        slide={currentSlide} 
+                                        slide={currentSlide}
                                         onRetry={() => handleRetry(currentIndex)}
                                         isRetrying={retrying === currentIndex}
                                     />
