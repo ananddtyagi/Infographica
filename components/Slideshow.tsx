@@ -47,14 +47,14 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
         }
     }, [currentIndex]);
 
-    // Poll for video updates
+    // Poll for updates (video or image)
     useEffect(() => {
-        const hasUnfinishedVideos = slides.some(
-            slide => slide.type === "video" && (!slide.assetUrl || slide.assetUrl === "")
+        const hasUnfinishedSlides = slides.some(
+            slide => (!slide.assetUrl || slide.assetUrl === "") && !slide.failed
         );
 
-        if (hasUnfinishedVideos && story.id) {
-            // Poll every 2 seconds for video updates
+        if (hasUnfinishedSlides && story.id) {
+            // Poll every 2 seconds for updates
             pollIntervalRef.current = setInterval(async () => {
                 try {
                     const response = await fetch(`/api/story?id=${story.id}`);
@@ -63,7 +63,7 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
                         setSlides(data.slides);
                     }
                 } catch (error) {
-                    console.error("Error polling for video updates:", error);
+                    console.error("Error polling for updates:", error);
                 }
             }, 2000);
         }
@@ -191,10 +191,10 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
         );
     }
 
-    // For videos: only show retry if failed, not if still generating
-    const isVideoGenerating = currentSlide.type === "video" && (!currentSlide.assetUrl || currentSlide.assetUrl === "") && !currentSlide.failed;
+    // For videos/images: only show retry if failed, not if still generating
+    const isGenerating = (!currentSlide.assetUrl || currentSlide.assetUrl === "") && !currentSlide.failed;
     const isPlaceholder = !currentSlide.assetUrl || currentSlide.assetUrl === "" || currentSlide.assetUrl === "/placeholder.png" || currentSlide.failed || imageError;
-    const shouldShowRetry = isPlaceholder && !isVideoGenerating;
+    const shouldShowRetry = isPlaceholder && !isGenerating;
 
     return (
         <div className="relative w-full min-h-screen bg-white dark:bg-[#0a0a0a] flex flex-col">
@@ -284,6 +284,12 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
                                             {imageLoading && !imageError && currentSlide.assetUrl && (
                                                 <div className="absolute inset-0 flex items-center justify-center bg-gray-50 dark:bg-[#1a1a1a]">
                                                     <div className="w-10 h-10 border-2 border-gray-200 dark:border-gray-800 border-t-gray-900 dark:border-t-gray-100 rounded-full animate-spin"></div>
+                                                </div>
+                                            )}
+                                            {(!currentSlide.assetUrl || currentSlide.assetUrl === "") && !currentSlide.failed && (
+                                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 dark:bg-[#1a1a1a]">
+                                                    <div className="w-10 h-10 border-2 border-gray-200 dark:border-gray-800 border-t-gray-900 dark:border-t-gray-100 rounded-full animate-spin mb-4"></div>
+                                                    <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Image is being created!</p>
                                                 </div>
                                             )}
                                         </>
