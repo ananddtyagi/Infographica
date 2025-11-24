@@ -2,11 +2,13 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Clock, Image as ImageIcon } from "lucide-react";
+import { Clock, Image as ImageIcon, Palette } from "lucide-react";
+import { IMAGE_STYLES, ImageStyle } from "./InputArea";
 
 interface HistoryItem {
     id: string;
     topic: string;
+    style?: ImageStyle;
     createdAt: string;
     slides: Array<{
         assetUrl: string;
@@ -87,6 +89,12 @@ export default function HistoryList({ onSelectStory }: HistoryListProps) {
                                 <span className="mx-2">•</span>
                                 {story.slides.length} slides
                             </div>
+                            {story.style && IMAGE_STYLES[story.style] && (
+                                <div className="mt-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
+                                    <Palette className="w-2.5 h-2.5 mr-1" />
+                                    {IMAGE_STYLES[story.style].name}
+                                </div>
+                            )}
                         </div>
 
                         {/* Thumbnail */}

@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
 
         const initialStory = {
             topic: storyPlan.topic,
+            style,
             narrative: storyPlan.narrative,
             slides: initialSlides,
         };

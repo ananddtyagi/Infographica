@@ -7,6 +7,7 @@ const DATA_DIR = path.join(process.cwd(), "data");
 export interface StoredStory {
     id: string;
     topic: string;
+    style?: string;
     narrative: string;
     slides: Array<{
         title: string;
@@ -45,7 +46,7 @@ export function saveStory(story: Omit<StoredStory, "id" | "createdAt">, provided
 }
 
 // Load all stories (returns metadata only for list view)
-export function loadStories(): Array<Pick<StoredStory, "id" | "topic" | "createdAt" | "slides">> {
+export function loadStories(): Array<Pick<StoredStory, "id" | "topic" | "style" | "createdAt" | "slides">> {
     ensureDataDir();
 
     const files = fs.readdirSync(DATA_DIR).filter(f => f.endsWith(".json"));
@@ -58,6 +59,7 @@ export function loadStories(): Array<Pick<StoredStory, "id" | "topic" | "created
                 return {
                     id: story.id,
                     topic: story.topic,
+                    style: story.style,
                     createdAt: story.createdAt,
                     slides: story.slides,
                 };

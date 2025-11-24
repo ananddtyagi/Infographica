@@ -29,7 +29,17 @@ Composition & Content:
 - Layout: [Choose one: A single detailed environmental scene OR A multi-panel comparison separated by thick black dividing lines].
 - Perspective: A wide, slightly elevated environmental view allowing for the depiction of landscapes, settlements, and small human figures interacting with their surroundings.
 
-Please follow this style guide to generate the infographic.`
+Please follow this style guide to generate the infographic.`,
+  photorealistic: `General Aesthetic: High-fidelity photorealistic image.
+Art Style: Realistic lighting, detailed textures, true-to-life colors.
+Context: Clear, educational presentation similar to high-quality photography or CGI.`,
+  flat_art: `General Aesthetic: Modern flat design.
+Art Style: Vector art, solid colors, clean lines, minimal shading.
+Context: Corporate or tech-focused infographic style.`,
+  "3d_render": `General Aesthetic: 3D rendered illustration.
+Art Style: Isometric or perspective view, clay or plastic materials, soft global illumination.
+Context: Modern, engaging digital art style.`,
+  free_style: ``
 } as const;
 
 export type ImageStyleType = keyof typeof IMAGE_STYLE_GUIDES;
@@ -142,7 +152,9 @@ export async function generateImage(prompt: string, style?: string): Promise<str
     let fullPrompt = prompt;
     if (style && style in IMAGE_STYLE_GUIDES) {
       const styleGuide = IMAGE_STYLE_GUIDES[style as ImageStyleType];
-      fullPrompt = `${prompt}\n\n${styleGuide}`;
+      if (styleGuide) {
+        fullPrompt = `${prompt}\n\n${styleGuide}`;
+      }
     }
     
     console.log(`Generating image for: ${prompt} using gemini-3-pro-image-preview with style: ${style || 'none'}`);
@@ -219,14 +231,17 @@ export async function generateVideo(prompt: string, style?: string): Promise<str
   let fullPrompt = prompt;
   if (style && style in IMAGE_STYLE_GUIDES) {
     const styleGuide = IMAGE_STYLE_GUIDES[style as ImageStyleType];
-    fullPrompt = `${prompt}\n\n${styleGuide}`;
+    if (styleGuide) {
+      fullPrompt = `${prompt}\n\n${styleGuide}`;
+    }
   }
-  
-  console.log(`Generating video for: ${prompt} using veo-3.1-generate-preview with style: ${style || 'none'}`);
+
+  const videoModel = "veo-3.1-fast-generate-preview";
+  console.log(`Generating video for: ${prompt} using ${videoModel} with style: ${style || 'none'}`);
   try {
     // Use the shared ai instance
     let operation = await ai.models.generateVideos({
-      model: "veo-3.1-generate-preview",
+      model: videoModel,
       prompt: fullPrompt,
     });
 

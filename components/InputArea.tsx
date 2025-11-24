@@ -24,6 +24,22 @@ Composition & Content:
 - Perspective: A wide, slightly elevated environmental view allowing for the depiction of landscapes, settlements, and small human figures interacting with their surroundings.
 
 Please follow this style guide to generate the infographic.`
+    },
+    photorealistic: {
+        name: "Photorealistic",
+        guide: "High-fidelity photorealistic image. Realistic lighting, detailed textures, true-to-life colors."
+    },
+    flat_art: {
+        name: "Flat Art",
+        guide: "Modern flat design. Vector art, solid colors, clean lines, minimal shading."
+    },
+    "3d_render": {
+        name: "3D Render",
+        guide: "3D rendered illustration. Isometric or perspective view, clay or plastic materials, soft global illumination."
+    },
+    free_style: {
+        name: "Free Style ✨",
+        guide: ""
     }
 } as const;
 
