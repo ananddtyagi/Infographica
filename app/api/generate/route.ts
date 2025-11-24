@@ -3,14 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
     try {
-        const { topic, apiKey, videoModel } = await request.json();
+        const { topic, apiKey } = await request.json();
 
         if (!topic) {
             return NextResponse.json({ error: "Topic is required" }, { status: 400 });
         }
 
         console.log("Generating story plan for topic:", topic);
-        const allowVideo = !!apiKey;
+        // Force allowVideo to false for now as requested
+        const allowVideo = false;
         
         // Step 1: Generate the story structure
         const storyPlan = await generateStory(topic, apiKey, allowVideo);

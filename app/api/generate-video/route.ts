@@ -5,7 +5,11 @@ export const maxDuration = 300; // Video generation takes time, set high timeout
 
 export async function POST(request: NextRequest) {
     try {
-        const { prompt, style, apiKey, model } = await request.json();
+        const body = await request.json();
+        if (!body) {
+            return NextResponse.json({ error: "Request body is required" }, { status: 400 });
+        }
+        const { prompt, style, apiKey, model } = body;
 
         if (!prompt) {
             return NextResponse.json({ error: "Prompt is required" }, { status: 400 });

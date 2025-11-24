@@ -254,9 +254,18 @@ export async function generateVideo(prompt: string, style?: string, apiKey?: str
   const videoModel = model;
   console.log(`Generating video for: ${prompt} using ${videoModel} with style: ${style || 'none'}`);
   try {
-    // Use the shared ai instance
+  // Use the shared ai instance
+    // Clean the model name to ensure it's in the correct format for the SDK
+    // The SDK expects just the model name (e.g. "veo-3.1-fast-generate-preview") 
+    // and handles adding "models/" prefix internally if not present.
+    // But if it already has "models/" prefix it handles that too.
+    if (!videoModel) {
+        throw new Error("Model name is required");
+    }
+    const cleanModel = videoModel.startsWith("models/") ? videoModel : `models/${videoModel}`;
+    
     let operation = await ai.models.generateVideos({
-      model: videoModel,
+      model: cleanModel,
       prompt: fullPrompt,
     });
 
@@ -270,6 +279,10 @@ export async function generateVideo(prompt: string, style?: string, apiKey?: str
       await new Promise((resolve) => setTimeout(resolve, 5000)); // 5 second wait
 
       // Refresh operation status
+      if (!operation) {
+         throw new Error("Operation object is missing");
+      }
+
       operation = await ai.operations.getVideosOperation({
         operation: operation,
       });

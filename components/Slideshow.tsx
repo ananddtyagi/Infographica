@@ -127,7 +127,7 @@ function SlideMedia({ slide, onRetry, isRetrying }: SlideMediaProps) {
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-[#1a1a1a] z-10">
                     <div className="text-center p-6">
                         <p className="text-gray-600 dark:text-gray-400 mb-4">
-                            {slide.errorMessage || `${slide.type === "video" ? "Video" : "Image"} failed to load`}
+                            {slide.errorMessage || "Failed to generate image"}
                         </p>
                         <div className="flex flex-col gap-3 items-center">
                             <button
@@ -232,47 +232,38 @@ export function Slideshow({ story, onReset, loadingFacts = [] }: SlideshowProps)
         setRetrying(slideIndex);
         try {
             const apiKey = localStorage.getItem("gemini_api_key");
-            const videoModel = localStorage.getItem("gemini_video_model");
+            // const videoModel = localStorage.getItem("gemini_video_model"); // Removed video support
             const imageModel = localStorage.getItem("gemini_image_model") || "gemini-3-pro-image-preview";
             const style = story.style || "drawing"; // fallback style
             const slide = slides[slideIndex];
 
             let assetUrl = "";
 
-            if (slide.type === "image") {
-                const res = await fetch("/api/generate-image", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ prompt: slide.imagePrompt, style, apiKey, model: imageModel }),
-                });
-                if (!res.ok) {
-                    const errorData = await res.json().catch(() => ({}));
-                    throw new Error(errorData.details || errorData.error || "Failed to generate image");
-                }
-                const data = await res.json();
-                assetUrl = data.assetUrl;
-            } else if (slide.type === "video") {
-                const res = await fetch("/api/generate-video", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ prompt: slide.videoPrompt, style, apiKey, model: videoModel }),
-                });
-                if (!res.ok) {
-                    const errorData = await res.json().catch(() => ({}));
-                    if (res.status === 429 || errorData.error === "VIDEO_RATE_LIMIT_EXCEEDED") {
-                        throw new Error("Video rate limit exceeded");
-                    }
-                    throw new Error("Failed to generate video");
-                }
-                const data = await res.json();
-                assetUrl = data.assetUrl;
+            // Force image generation for all slide types, effectively converting failed videos to images
+            const res = await fetch("/api/generate-image", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    prompt: slide.imagePrompt || slide.videoPrompt, // Fallback to video prompt if image prompt missing (unlikely per schema)
+                    style, 
+                    apiKey, 
+                    model: imageModel 
+                }),
+            });
+            
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.details || errorData.error || "Failed to generate image");
             }
+            const data = await res.json();
+            assetUrl = data.assetUrl;
 
             if (assetUrl) {
                 const updatedSlides = [...slides];
                 updatedSlides[slideIndex] = {
                     ...updatedSlides[slideIndex],
                     assetUrl: assetUrl,
+                    type: "image", // Force type to image
                     failed: false,
                     errorMessage: undefined
                 };

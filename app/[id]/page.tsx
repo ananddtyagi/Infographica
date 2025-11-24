@@ -67,7 +67,6 @@ export default function StoryPage({ params }: { params: { id: string } }) {
     async function generateStory(topic: string, style: string) {
         try {
             const apiKey = localStorage.getItem("gemini_api_key");
-            const videoModel = localStorage.getItem("gemini_video_model") || "veo-3.1-fast-generate-001";
             const imageModel = localStorage.getItem("gemini_image_model") || "gemini-3-pro-image-preview";
 
             // 1. Start generating fun facts
@@ -86,7 +85,7 @@ export default function StoryPage({ params }: { params: { id: string } }) {
             const planResponse = await fetch("/api/generate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ topic, apiKey, videoModel }),
+                body: JSON.stringify({ topic, apiKey }),
             });
 
             if (!planResponse.ok) throw new Error("Failed to generate story plan");
@@ -131,7 +130,10 @@ export default function StoryPage({ params }: { params: { id: string } }) {
                             }
                             const data = await res.json();
                             if (data.assetUrl) assetUrl = data.assetUrl;
-                        } else if (slide.type === "video") {
+                        } 
+                        /* 
+                        // Video generation disabled for now
+                        else if (slide.type === "video") {
                             if (apiKey) {
                                 const res = await fetch("/api/generate-video", {
                                     method: "POST",
@@ -152,6 +154,7 @@ export default function StoryPage({ params }: { params: { id: string } }) {
                                 return; // Skip without error
                             }
                         }
+                        */
 
                         if (assetUrl) {
                             updatedStory.slides[i].assetUrl = assetUrl;

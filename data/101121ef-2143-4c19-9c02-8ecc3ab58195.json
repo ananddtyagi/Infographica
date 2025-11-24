@@ -24,21 +24,20 @@
     {
       "title": "Valles Marineris",
       "content": "This massive canyon system stretches 2,500 miles across the planet's equator. It is up to 4 miles deep, making the Grand Canyon look like a mere scratch in comparison.",
-      "imagePrompt": "",
+      "imagePrompt": "A cinematic flyover video moving through the deep, steep-walled canyons of Valles Marineris, showcasing red stratified rock layers and the immense scale of the geological rift.",
       "videoPrompt": "A cinematic flyover video moving through the deep, steep-walled canyons of Valles Marineris, showcasing red stratified rock layers and the immense scale of the geological rift.",
-      "type": "video",
-      "assetUrl": "/generated/f9ad45c9-9bd2-4b20-8a67-6f2d198798fd.mp4",
+      "type": "image",
+      "assetUrl": "/generated/bd6a8c26-bf74-4659-9ee9-0ed68ed0b686.png",
       "failed": false
     },
     {
       "title": "Dust Storms",
       "content": "Mars experiences dust storms that can grow large enough to encompass the entire planet. These storms can block out the sun for weeks, posing a major challenge for solar-powered rovers.",
-      "imagePrompt": "",
+      "imagePrompt": "A time-lapse animation of a massive wall of red dust sweeping across a rocky Martian plain, gradually obscuring the sun and turning the environment dark and hazy.",
       "videoPrompt": "A time-lapse animation of a massive wall of red dust sweeping across a rocky Martian plain, gradually obscuring the sun and turning the environment dark and hazy.",
-      "type": "video",
-      "assetUrl": "/placeholder.png",
-      "failed": true,
-      "errorMessage": "you have reached your video rate limit for the day"
+      "type": "image",
+      "assetUrl": "/generated/ef48bc4d-fd1c-4f88-92b8-163070bb5a6c.png",
+      "failed": false
     },
     {
       "title": "The Polar Ice Caps",

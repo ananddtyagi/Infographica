@@ -44,10 +44,9 @@
       "content": "The heart beats automatically due to an intrinsic electrical system controlled by the sinoatrial node, the body's natural pacemaker. This electrical impulse travels through the heart walls, triggering muscle contractions in perfect synchronization.",
       "imagePrompt": "A transparent anatomical heart model with a glowing yellow electrical network highlighted, showing the path of the signal from the upper atrium down to the ventricles, representing a heartbeat signal.",
       "videoPrompt": "A pulsing animation of a transparent heart. A bright electrical impulse starts at the top right (SA node) and spreads like a wave down through the ventricles, causing the muscle walls to contract rhythmically.",
-      "type": "video",
-      "assetUrl": "/placeholder.png",
-      "failed": true,
-      "errorMessage": "Oh no! You have reached your video rate limit for the day"
+      "type": "image",
+      "assetUrl": "/generated/fe17c0b2-7f47-41e9-a40f-8896e48dc1f0.png",
+      "failed": false
     },
     {
       "title": "Fueling the System",
