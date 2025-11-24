@@ -1,0 +1,58 @@
+{
+  "topic": "How a Hairdryer Works",
+  "narrative": "Uncover the engineering magic hidden inside a common household appliance. This visual journey follows the path of air as it transforms from a cool breeze into a powerful, drying jet stream through the principles of electromagnetism and thermodynamics.",
+  "slides": [
+    {
+      "title": "Inside the Casing",
+      "content": "At first glance, a hairdryer seems simple, but it is a compact machine designed to manipulate air. Removing the outer plastic shell reveals two main components: a fan driven by an electric motor and a heating element.",
+      "imagePrompt": "A high-quality 3D exploded view of a modern hairdryer, floating components showing the outer casing, the internal motor, the fan blades, and the coiled heating element against a clean studio background.",
+      "type": "image",
+      "assetUrl": "/generated/b1a01052-f42d-405f-ad84-aa3704656d1a.png",
+      "failed": false
+    },
+    {
+      "title": "The Engine: The Electric Motor",
+      "content": "When you plug it in and flip the switch, electricity powers a small, high-speed motor. This motor converts electrical energy into mechanical energy to spin the fan blades.",
+      "imagePrompt": "Close-up, photorealistic visualization of a small DC motor connected to fan blades, showing copper windings and magnetic fields, with electrical sparks indicating power flow.",
+      "videoPrompt": "A 5-second animation showing the electric motor starting up and spinning the fan blades rapidly, blurring into motion to demonstrate speed.",
+      "type": "video",
+      "assetUrl": "/generated/9c8eb2ea-b9b5-4cb1-9a29-c61045e60041.mp4",
+      "failed": false
+    },
+    {
+      "title": "Drawing in the Air",
+      "content": "The spinning fan acts like a pump, using centrifugal force to draw cool room temperature air in through the rear vents. The shape of the casing guides this airflow forward towards the barrel of the dryer.",
+      "imagePrompt": "A cross-section diagram of a hairdryer with blue arrows indicating cool air entering through the back mesh screen and being pushed forward by the fan blades.",
+      "type": "image",
+      "assetUrl": "/generated/cce59817-4453-44d8-bc34-a7a1802954a5.png",
+      "failed": false
+    },
+    {
+      "title": "The Heating Element",
+      "content": "The moving air flows over a frame wrapped in nichrome wire. Because nichrome has high electrical resistance, it glows red-hot as electricity passes through it, instantly heating the air around it.",
+      "imagePrompt": "A detailed macro shot of coiled nichrome wires glowing bright orange with heat inside the hairdryer barrel, with faint distortion waves visible in the air to represent heat.",
+      "type": "image",
+      "assetUrl": "/generated/5c282d8f-9448-4c28-b28b-2aa90daf5afd.png",
+      "failed": false
+    },
+    {
+      "title": "Convection in Action",
+      "content": "This process creates forced convection, where the air absorbs thermal energy as it passes the coils. The air expands and becomes less dense, but the force of the fan pushes it out of the nozzle at high velocity.",
+      "imagePrompt": "A thermal imaging style illustration showing air changing color from blue (cool) at the back to deep red (hot) as it passes through the coils and exits the nozzle.",
+      "videoPrompt": "A 5-second visualization of air particles turning from blue to red as they pass through the heating coils and accelerating out of the nozzle.",
+      "type": "video",
+      "assetUrl": "/generated/7f65ee64-841a-4dfb-9bdf-624f18fa9e57.mp4",
+      "failed": false
+    },
+    {
+      "title": "The Physics of Drying",
+      "content": "The hot, fast-moving air speeds up evaporation by transferring heat to the water molecules on your hair. This extra energy allows the water to break free from the hair shaft and turn into vapor.",
+      "imagePrompt": "A microscopic artistic render of a hair strand with water droplets, showing steam rising off the droplets as hot air waves pass over them.",
+      "type": "image",
+      "assetUrl": "/generated/77f98350-4fa5-436e-a16f-fd6e05e97ff8.png",
+      "failed": false
+    }
+  ],
+  "id": "be869c44-3621-4231-ba52-8dc50d5c6041",
+  "createdAt": "2025-11-24T01:08:21.351Z"
+}

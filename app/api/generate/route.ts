@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateStory, generateImage, generateVideo } from "@/lib/gemini";
-import { saveStory } from "@/lib/storage";
+import { saveStory, updateSlideAsset } from "@/lib/storage";
 
 export async function POST(request: NextRequest) {
     try {
@@ -15,44 +15,68 @@ export async function POST(request: NextRequest) {
         // Step 1: Generate the story structure
         const storyPlan = await generateStory(topic);
 
-        console.log(`Generating assets for ${storyPlan.slides.length} slides...`);
+        console.log(`Generated story plan with ${storyPlan.slides.length} slides`);
 
-        // Step 2: Generate images/videos for each slide
-        const slidesWithAssets = await Promise.all(
-            storyPlan.slides.map(async (slide) => {
-                let assetUrl = "";
-                let failed = false;
+        // Step 2: Save initial story with empty asset URLs
+        const initialSlides = storyPlan.slides.map(slide => ({
+            ...slide,
+            assetUrl: "",
+            failed: false,
+        }));
 
-                try {
-                    if (slide.type === "video" && slide.videoPrompt) {
-                        assetUrl = await generateVideo(slide.videoPrompt, style);
-                    } else {
-                        assetUrl = await generateImage(slide.imagePrompt, style);
-                    }
-                } catch (error) {
-                    console.error(`Failed to generate asset for slide: ${slide.title}`, error);
-                    assetUrl = "/placeholder.png";
-                    failed = true;
-                }
-
-                return {
-                    ...slide,
-                    assetUrl,
-                    failed,
-                };
-            })
-        );
-
-        const finalStory = {
+        const initialStory = {
             topic: storyPlan.topic,
             narrative: storyPlan.narrative,
-            slides: slidesWithAssets,
+            slides: initialSlides,
         };
 
-        // Save story to local storage (use provided ID if available)
-        const storyId = saveStory(finalStory, id);
+        const storyId = saveStory(initialStory, id);
+        console.log(`Saved initial story with ID: ${storyId}`);
 
-        return NextResponse.json({ ...finalStory, id: storyId });
+        // Step 3: Generate images first (sequentially to save progress)
+        console.log("Generating images...");
+        for (let i = 0; i < storyPlan.slides.length; i++) {
+            const slide = storyPlan.slides[i];
+            
+            // Only generate images first, skip videos
+            if (slide.type === "image") {
+                try {
+                    console.log(`Generating image ${i + 1}/${storyPlan.slides.length}: ${slide.title}`);
+                    const assetUrl = await generateImage(slide.imagePrompt, style);
+                    updateSlideAsset(storyId, i, assetUrl, false);
+                    console.log(`✓ Image ${i + 1} complete`);
+                } catch (error) {
+                    console.error(`Failed to generate image for slide ${i}: ${slide.title}`, error);
+                    updateSlideAsset(storyId, i, "/placeholder.png", true);
+                }
+            }
+        }
+
+        console.log("All images generated, returning story");
+
+        // Step 4: Generate videos in background (don't wait for response)
+        setImmediate(async () => {
+            console.log("Starting background video generation...");
+            for (let i = 0; i < storyPlan.slides.length; i++) {
+                const slide = storyPlan.slides[i];
+                
+                if (slide.type === "video" && slide.videoPrompt) {
+                    try {
+                        console.log(`Generating video ${i + 1}: ${slide.title}`);
+                        const assetUrl = await generateVideo(slide.videoPrompt, style);
+                        updateSlideAsset(storyId, i, assetUrl, false);
+                        console.log(`✓ Video ${i + 1} complete`);
+                    } catch (error) {
+                        console.error(`Failed to generate video for slide ${i}: ${slide.title}`, error);
+                        updateSlideAsset(storyId, i, "/placeholder.png", true);
+                    }
+                }
+            }
+            console.log("All videos generated");
+        });
+
+        // Return story with images ready (videos will be generated in background)
+        return NextResponse.json({ id: storyId });
     } catch (error: any) {
         console.error("Generation failed:", error);
         // Log to file for debugging

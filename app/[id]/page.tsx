@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Slideshow } from "@/components/Slideshow";
 import { LoadingScreen } from "@/components/LoadingScreen";
+import { Slideshow } from "@/components/Slideshow";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 interface Story {
     id?: string;
@@ -27,9 +27,18 @@ export default function StoryPage({ params }: { params: { id: string } }) {
     const [generating, setGenerating] = useState(false);
     const [error, setError] = useState(false);
     const [funFacts, setFunFacts] = useState<string[]>([]);
+    const [generationProgress, setGenerationProgress] = useState(0);
+    const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         initializeStory();
+
+        return () => {
+            // Cleanup polling on unmount
+            if (pollingIntervalRef.current) {
+                clearInterval(pollingIntervalRef.current);
+            }
+        };
     }, [params.id]);
 
     async function initializeStory() {
@@ -43,11 +52,9 @@ export default function StoryPage({ params }: { params: { id: string } }) {
             // New story - generate it
             sessionStorage.removeItem(topicKey); // Clear it so refresh doesn't regenerate
             sessionStorage.removeItem(styleKey);
+            setLoading(false); // Not loading an existing story, we're generating a new one
             setGenerating(true);
-            
-            // Load the placeholder story first
-            await loadStory();
-            
+
             // Then start generation
             await generateStory(topic, style);
         } else {
@@ -65,13 +72,6 @@ export default function StoryPage({ params }: { params: { id: string } }) {
                 body: JSON.stringify({ topic }),
             }).then(res => res.json());
 
-            // 2. Start generating story in parallel
-            const storyPromise = fetch("/api/generate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ topic, id: params.id, style }),
-            }).then(res => res.json());
-
             // Handle facts as soon as they arrive
             factsPromise.then(data => {
                 if (data.facts) setFunFacts(data.facts);
@@ -84,15 +84,73 @@ export default function StoryPage({ params }: { params: { id: string } }) {
                 ]);
             });
 
-            // Wait for story
-            const storyData = await storyPromise;
-            setStory(storyData);
+            // 2. Start generating story (this will generate images incrementally)
+            const storyPromise = fetch("/api/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ topic, id: params.id, style }),
+            }).then(res => res.json());
+
+            // 3. Start polling for progress while generation happens
+            startProgressPolling();
+
+            // Wait for generation to complete (images done, videos in background)
+            await storyPromise;
+
+            // 4. Stop polling and load final story
+            stopProgressPolling();
+            await loadStory();
             setGenerating(false);
 
         } catch (error) {
             console.error("Error generating story:", error);
             setError(true);
             setGenerating(false);
+            stopProgressPolling();
+        }
+    }
+
+    function startProgressPolling() {
+        // Poll every second to check progress
+        pollingIntervalRef.current = setInterval(async () => {
+            await checkGenerationProgress();
+        }, 1000);
+    }
+
+    function stopProgressPolling() {
+        if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+        }
+    }
+
+    async function checkGenerationProgress() {
+        try {
+            const response = await fetch(`/api/story?id=${params.id}`);
+            if (!response.ok) return;
+
+            const data = await response.json();
+
+            if (data && data.slides && data.slides.length > 0) {
+                // Calculate progress based on image slides that have been generated
+                const imageSlides = data.slides.filter((s: any) => s.type === "image");
+                const generatedImages = imageSlides.filter((s: any) => s.assetUrl && s.assetUrl !== "");
+
+                const progress = imageSlides.length > 0
+                    ? Math.round((generatedImages.length / imageSlides.length) * 100)
+                    : 0;
+
+                setGenerationProgress(progress);
+
+                // If all images are ready, we can show the story
+                if (progress === 100) {
+                    setStory(data);
+                    setGenerating(false); // Stop showing loading screen
+                    stopProgressPolling(); // Stop polling since we have all images
+                }
+            }
+        } catch (error) {
+            console.error("Error checking progress:", error);
         }
     }
 
@@ -116,12 +174,15 @@ export default function StoryPage({ params }: { params: { id: string } }) {
         router.push("/");
     };
 
-    if (loading || generating) {
+    // Show loading screen while generating or if story has no slides yet
+    const hasContent = story && story.slides && story.slides.length > 0;
+
+    if (loading || (generating && !hasContent)) {
         return (
             <LoadingScreen
                 facts={funFacts.length > 0 ? funFacts : [
-                    "Retrieving your story from the archives...",
-                    "Dusting off the digital pages...",
+                    "Researching the topic...",
+                    "Creating the story...",
                     "Almost there..."
                 ]}
             />

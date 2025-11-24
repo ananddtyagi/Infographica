@@ -33,6 +33,7 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
     const [imageLoading, setImageLoading] = useState(true);
     const [imageError, setImageError] = useState(false);
     const loadTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     const nextSlide = useCallback(() => {
         if (currentIndex < slides.length - 1) {
@@ -45,6 +46,35 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
             setCurrentIndex(currentIndex - 1);
         }
     }, [currentIndex]);
+
+    // Poll for video updates
+    useEffect(() => {
+        const hasUnfinishedVideos = slides.some(
+            slide => slide.type === "video" && (!slide.assetUrl || slide.assetUrl === "")
+        );
+
+        if (hasUnfinishedVideos && story.id) {
+            // Poll every 2 seconds for video updates
+            pollIntervalRef.current = setInterval(async () => {
+                try {
+                    const response = await fetch(`/api/story?id=${story.id}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setSlides(data.slides);
+                    }
+                } catch (error) {
+                    console.error("Error polling for video updates:", error);
+                }
+            }, 2000);
+        }
+
+        return () => {
+            if (pollIntervalRef.current) {
+                clearInterval(pollIntervalRef.current);
+                pollIntervalRef.current = null;
+            }
+        };
+    }, [slides, story.id]);
 
     // Keyboard navigation
     useEffect(() => {
@@ -106,6 +136,8 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
 
     // Reset loading state when slide changes
     useEffect(() => {
+        if (!currentSlide) return;
+
         setImageLoading(true);
         setImageError(false);
 
@@ -128,7 +160,7 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
                 loadTimerRef.current = null;
             }
         };
-    }, [currentIndex, currentSlide.assetUrl, currentSlide.type]);
+    }, [currentIndex, currentSlide?.assetUrl, currentSlide?.type]);
 
     const handleImageLoad = () => {
         setImageLoading(false);
@@ -149,7 +181,20 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
         }
     };
 
+    // Safety check: if no slides yet, show loading state
+    if (!currentSlide || slides.length === 0) {
+        return (
+            <div className="relative w-full min-h-screen bg-white dark:bg-[#0a0a0a] flex flex-col items-center justify-center">
+                <div className="w-10 h-10 border-2 border-gray-200 dark:border-gray-800 border-t-gray-900 dark:border-t-gray-100 rounded-full animate-spin mb-4"></div>
+                <p className="text-gray-600 dark:text-gray-400">Loading your infographic...</p>
+            </div>
+        );
+    }
+
+    // For videos: only show retry if failed, not if still generating
+    const isVideoGenerating = currentSlide.type === "video" && (!currentSlide.assetUrl || currentSlide.assetUrl === "") && !currentSlide.failed;
     const isPlaceholder = !currentSlide.assetUrl || currentSlide.assetUrl === "" || currentSlide.assetUrl === "/placeholder.png" || currentSlide.failed || imageError;
+    const shouldShowRetry = isPlaceholder && !isVideoGenerating;
 
     return (
         <div className="relative w-full min-h-screen bg-white dark:bg-[#0a0a0a] flex flex-col">
@@ -207,14 +252,24 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
                                     className="w-full h-full"
                                 >
                                     {currentSlide.type === "video" ? (
-                                        <video
-                                            src={currentSlide.assetUrl}
-                                            autoPlay
-                                            loop
-                                            muted
-                                            playsInline
-                                            className="w-full h-full object-cover"
-                                        />
+                                        <>
+                                            {currentSlide.assetUrl && currentSlide.assetUrl !== "" && (
+                                                <video
+                                                    src={currentSlide.assetUrl}
+                                                    autoPlay
+                                                    loop
+                                                    muted
+                                                    playsInline
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            )}
+                                            {(!currentSlide.assetUrl || currentSlide.assetUrl === "") && !currentSlide.failed && (
+                                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 dark:bg-[#1a1a1a]">
+                                                    <div className="w-10 h-10 border-2 border-gray-200 dark:border-gray-800 border-t-gray-900 dark:border-t-gray-100 rounded-full animate-spin mb-4"></div>
+                                                    <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Video is being created!</p>
+                                                </div>
+                                            )}
+                                        </>
                                     ) : (
                                         <>
                                             {currentSlide.assetUrl && currentSlide.assetUrl !== "" && (
@@ -234,8 +289,8 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
                                         </>
                                     )}
 
-                                    {/* Retry Overlay */}
-                                    {isPlaceholder && (
+                                    {/* Retry Overlay - only show if actually failed, not if still generating */}
+                                    {shouldShowRetry && (
                                         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-[#1a1a1a] z-10">
                                             <div className="text-center">
                                                 <p className="text-gray-600 dark:text-gray-400 mb-4">

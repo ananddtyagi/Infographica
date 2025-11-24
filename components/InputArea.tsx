@@ -1,11 +1,11 @@
 "use client";
 
+import { ChevronDown, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { Sparkles, ChevronDown } from "lucide-react";
 
 export const IMAGE_STYLES = {
     drawing: {
-        name: "Drawing",
+        name: "Hand Drawn",
         guide: `General Aesthetic: A hand-drawn educational illustration in the style of a traditional textbook or field guide showing comparison scenes. The overall look should feel analog, not digital, with visible textures of traditional media.
 
 Art Style & Medium:
@@ -16,7 +16,7 @@ Art Style & Medium:
 
 Text & Labeling Style:
 - Main Titles: Located at the very top of the panel(s). Hand-lettered, bold, all-caps, sans-serif font, underlined with a hand-drawn line.
-- Internal Labels: Smaller, handwritten, casual sans-serif text within the scene.
+- Internal Labels: Smaller, handwritten, casual sans-serif text within the scene. Don't label obvious things, label things that make sense to highligh in the explanation of the diagram.
 - Connectors: Hand-drawn black ink curved arrows connecting the labels to specific objects or figures in the illustration.
 
 Composition & Content:
@@ -72,9 +72,9 @@ export function InputArea({ onSubmit, isLoading }: InputAreaProps) {
                         Let's learn
                     </button>
                 </div>
-                
+
                 {/* Style Selector Dropdown */}
-                <div className="mt-3 flex items-center justify-center">
+                <div className="mt-3 flex items-center justify-start">
                     <div className="relative">
                         <button
                             type="button"
@@ -85,7 +85,7 @@ export function InputArea({ onSubmit, isLoading }: InputAreaProps) {
                             <span>Style: {IMAGE_STYLES[selectedStyle].name}</span>
                             <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                         </button>
-                        
+
                         {isDropdownOpen && (
                             <div className="absolute top-full mt-2 left-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden z-10 min-w-[140px]">
                                 {Object.entries(IMAGE_STYLES).map(([key, style]) => (
@@ -96,11 +96,10 @@ export function InputArea({ onSubmit, isLoading }: InputAreaProps) {
                                             setSelectedStyle(key as ImageStyle);
                                             setIsDropdownOpen(false);
                                         }}
-                                        className={`w-full text-left px-4 py-2.5 text-sm transition-colors duration-150 ${
-                                            selectedStyle === key
-                                                ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-medium'
-                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-750'
-                                        }`}
+                                        className={`w-full text-left px-4 py-2.5 text-sm transition-colors duration-150 ${selectedStyle === key
+                                            ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-medium'
+                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-750'
+                                            }`}
                                     >
                                         {style.name}
                                     </button>
