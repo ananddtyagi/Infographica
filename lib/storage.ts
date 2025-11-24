@@ -28,10 +28,10 @@ function ensureDataDir() {
 }
 
 // Save a story to local storage
-export function saveStory(story: Omit<StoredStory, "id" | "createdAt">): string {
+export function saveStory(story: Omit<StoredStory, "id" | "createdAt">, providedId?: string): string {
     ensureDataDir();
 
-    const id = uuidv4();
+    const id = providedId || uuidv4();
     const storedStory: StoredStory = {
         ...story,
         id,

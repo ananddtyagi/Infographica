@@ -1,0 +1,71 @@
+{
+  "topic": "History of Thanksgiving",
+  "narrative": "Trace the evolution of Thanksgiving from ancient harvest festivals and the 1621 alliance between the Wampanoag and Pilgrims to its establishment as a national holiday by Abraham Lincoln, exploring the myths, realities, and enduring traditions of gratitude.",
+  "slides": [
+    {
+      "title": "Ancient Roots of Harvest",
+      "content": "Long before the Pilgrims, Native Americans and cultures worldwide held traditions of giving thanks for the autumn harvest. These ancient ceremonies honored the earth's bounty and community survival.",
+      "imagePrompt": "A serene, pre-colonial landscape showing Native American people gathering corn and squash in an autumn field, golden hour lighting, historical realism.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/e72b443f-8863-4fed-9a57-1a6455d0e31a.png",
+      "failed": false
+    },
+    {
+      "title": "The Mayflower's Voyage",
+      "content": "In 1620, the Mayflower carried English separatists and others across the Atlantic. They endured a perilous journey and a brutal first winter where nearly half the passengers perished due to cold and disease.",
+      "imagePrompt": "The Mayflower ship sailing on rough dark Atlantic waters, snow falling, moody atmosphere, 17th-century maritime art style.",
+      "videoPrompt": "Cinematic animation of the Mayflower ship pitching on rough ocean waves during a storm, snow falling, emphasizing the harsh conditions of the 1620 voyage.",
+      "type": "video",
+      "assetUrl": "/generated/42de789c-867f-4f54-921a-d55a2189354a.mp4",
+      "failed": false
+    },
+    {
+      "title": "The Wampanoag Alliance",
+      "content": "Survival for the settlers depended on an alliance with the local Wampanoag people. Squanto served as an interpreter and taught the Pilgrims vital skills like cultivating corn using fish as fertilizer.",
+      "imagePrompt": "Historical illustration of Squanto demonstrating to Pilgrims how to plant corn seeds with fish in the soil, clear daylight, educational style.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/2674dbc4-f64b-47c9-8f3c-249084be9cf6.png",
+      "failed": false
+    },
+    {
+      "title": "The 1621 Harvest Feast",
+      "content": "The famous 'first' Thanksgiving was actually a three-day secular harvest festival attended by 53 Pilgrims and 90 Wampanoag men. The menu likely featured venison, wildfowl, and corn, rather than today's turkey and pumpkin pie.",
+      "imagePrompt": "A long outdoor wooden table in a 17th-century settlement, diverse group of Pilgrims and Wampanoag men eating together, venison and game birds on table, realistic detail.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/941518c0-1662-4906-a534-7f62dd965251.png",
+      "failed": false
+    },
+    {
+      "title": "The Campaign for a Holiday",
+      "content": "For centuries, Thanksgiving was only a regional observance. Sarah Josepha Hale, a magazine editor and author, campaigned for 17 years, writing letters to politicians to make it a national holiday.",
+      "imagePrompt": "Portrait of Sarah Josepha Hale in a Victorian dress sitting at a desk, writing a letter with a quill, surrounded by stacks of paper, determined expression.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/8904be2b-d0cc-4752-8345-dc2e350d6201.png",
+      "failed": false
+    },
+    {
+      "title": "Lincoln's Proclamation",
+      "content": "In 1863, amidst the Civil War, President Abraham Lincoln proclaimed a national day of Thanksgiving. He hoped the holiday would help 'heal the wounds of the nation' and unify the divided country.",
+      "imagePrompt": "Abraham Lincoln standing in the Oval Office holding a parchment document, warm candlelight, solemn and dignified atmosphere.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/010a2fa9-19d3-4e83-8800-21658c74a28f.png",
+      "failed": false
+    },
+    {
+      "title": "Modern Traditions",
+      "content": "Today, Thanksgiving has evolved into a secular holiday centered on family, football, and feasting. While the food has changed, the core sentiment of gathering and gratitude remains the heart of the celebration.",
+      "imagePrompt": "A top-down view of a modern diverse family holding hands around a dinner table with a roasted turkey in the center, warm and cozy aesthetic.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/d1da7187-4113-4138-ba06-839613028fa1.png",
+      "failed": false
+    }
+  ],
+  "id": "6d213a1f-b994-41c6-98fe-8004fc27a222",
+  "createdAt": "2025-11-23T07:50:18.220Z"
+}

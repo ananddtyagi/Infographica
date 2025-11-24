@@ -1,103 +1,65 @@
 "use client";
 
-import { useState } from "react";
-import { InputArea } from "@/components/InputArea";
-import { Slideshow } from "@/components/Slideshow";
+import { useRouter } from "next/navigation";
+import { InputArea, ImageStyle } from "@/components/InputArea";
 import HistoryList from "@/components/HistoryList";
-
-interface Story {
-    id?: string;
-    topic: string;
-    narrative: string;
-    slides: Array<{
-        title: string;
-        content: string;
-        imagePrompt: string;
-        videoPrompt?: string;
-        type: "image" | "video";
-        assetUrl: string;
-        failed?: boolean;
-    }>;
-}
+import { v4 as uuidv4 } from "uuid";
 
 export default function Home() {
-    const [isLoading, setIsLoading] = useState(false);
-    const [story, setStory] = useState<Story | null>(null);
-    const [showHistory, setShowHistory] = useState(false);
+    const router = useRouter();
 
-    const handleGenerate = async (topic: string) => {
-        setIsLoading(true);
-        setShowHistory(false);
+    const handleGenerate = async (topic: string, style: ImageStyle) => {
+        // Generate UUID
+        const id = uuidv4();
+        
         try {
-            const response = await fetch("/api/generate", {
+            // Initialize the story placeholder first
+            await fetch("/api/init-story", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ topic }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ topic, id, style }),
             });
-
-            if (!response.ok) {
-                throw new Error("Generation failed");
-            }
-
-            const data = await response.json();
-            setStory(data);
+            
+            // Store the topic and style in sessionStorage so the [id] page can start generation
+            sessionStorage.setItem(`story-${id}-topic`, topic);
+            sessionStorage.setItem(`story-${id}-style`, style);
+            
+            // Navigate to the new page
+            router.push(`/${id}`);
         } catch (error) {
-            console.error("Error generating story:", error);
-            alert("Failed to generate story. Please try again.");
-        } finally {
-            setIsLoading(false);
+            console.error("Failed to initialize story:", error);
+            alert("Failed to start story generation. Please try again.");
         }
     };
 
     const handleSelectStory = async (id: string) => {
-        try {
-            const response = await fetch(`/api/story?id=${id}`);
-            if (!response.ok) {
-                throw new Error("Failed to load story");
-            }
-            const data = await response.json();
-            setStory(data);
-            setShowHistory(false);
-        } catch (error) {
-            console.error("Error loading story:", error);
-            alert("Failed to load story. Please try again.");
-        }
+        // Navigate to existing story
+        router.push(`/${id}`);
     };
-
-    const handleReset = () => {
-        setStory(null);
-        setShowHistory(true);
-    };
-
-    if (story) {
-        return <Slideshow story={story} onReset={handleReset} />;
-    }
-
-    if (showHistory) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex flex-col items-center justify-center p-8">
-                <button
-                    onClick={() => setShowHistory(false)}
-                    className="mb-8 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
-                >
-                    ← Create New Story
-                </button>
-                <HistoryList onSelectStory={handleSelectStory} />
-            </div>
-        );
-    }
 
     return (
-        <div className="relative">
-            <InputArea onSubmit={handleGenerate} isLoading={isLoading} />
-            <button
-                onClick={() => setShowHistory(true)}
-                className="absolute top-8 right-8 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg backdrop-blur-sm transition-colors"
-            >
-                View History
-            </button>
-        </div>
+        <main className="min-h-screen bg-white dark:bg-[#0a0a0a] text-black dark:text-white overflow-x-hidden transition-colors duration-200">
+            <div className="flex flex-col items-center justify-start min-h-screen px-4 md:px-8">
+                {/* Header with Infographica branding */}
+                <div className="w-full max-w-4xl pt-16 pb-8 text-center">
+                    <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        Infographica
+                    </h1>
+                    <p className="text-base text-gray-500 dark:text-gray-500 mt-3">
+                        Turn any topic into a visual story
+                    </p>
+                </div>
+
+                {/* Centered Input Area */}
+                <div className="w-full max-w-4xl mb-12">
+                    <InputArea onSubmit={handleGenerate} isLoading={false} />
+                </div>
+
+                {/* Scrollable History Section */}
+                <div className="w-full max-w-4xl pb-8">
+                    <HistoryList onSelectStory={handleSelectStory} />
+                </div>
+            </div>
+        </main>
     );
 }
