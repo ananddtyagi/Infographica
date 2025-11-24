@@ -187,7 +187,10 @@ export async function generateImage(prompt: string, style?: string, apiKey?: str
       });
 
       if (response.generatedImages && response.generatedImages.length > 0) {
-        const imgBytes = response.generatedImages[0].image.imageBytes;
+        const imgBytes = response.generatedImages[0]?.image?.imageBytes || "";
+        if (!imgBytes) {
+          throw new Error("No image bytes found in response");
+        }
         // imgBytes is usually a base64 string in the response
         return `data:image/png;base64,${imgBytes}`;
       }
