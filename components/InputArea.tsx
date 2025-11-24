@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Key, Lightbulb, Sparkles } from "lucide-react";
 import { useState } from "react";
+import { usePostHog } from 'posthog-js/react';
 
 export const IMAGE_STYLES = {
     drawing: {
@@ -52,6 +53,7 @@ interface InputAreaProps {
 }
 
 export function InputArea({ onSubmit, isLoading }: InputAreaProps) {
+    const posthog = usePostHog();
     const [topic, setTopic] = useState("");
     const [selectedStyle, setSelectedStyle] = useState<ImageStyle>("drawing");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -95,6 +97,10 @@ export function InputArea({ onSubmit, isLoading }: InputAreaProps) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (topic.trim()) {
+            posthog.capture('generate_story', {
+                topic: topic,
+                style: selectedStyle
+            });
             onSubmit(topic, selectedStyle);
         }
     };
