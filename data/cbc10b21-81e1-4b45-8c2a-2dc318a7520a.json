@@ -1,0 +1,62 @@
+{
+  "topic": "History of the Pyramids",
+  "narrative": "Journey through ancient Egypt to witness the architectural evolution of the pyramids. From humble mud-brick tombs to the towering limestone marvels of Giza, discover how engineering genius and religious devotion shaped these eternal monuments.",
+  "slides": [
+    {
+      "title": "The Beginning: Mastabas",
+      "content": "Long before the giant geometric shapes we know today, early Egyptian pharaohs were buried in Mastabas. These were flat-roofed, rectangular structures made of mudbricks that marked the underground burial chambers of the elite.",
+      "imagePrompt": "A photorealistic reconstruction of an ancient Egyptian Mastaba tomb in the desert, rectangular mudbrick structure with sloping sides, golden hour lighting, high detailed 8k resolution.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/35d71a6a-b1b8-4468-939e-3fc699b38cd6.png",
+      "failed": false
+    },
+    {
+      "title": "The First Step: Djoser's Innovation",
+      "content": "The architectural revolution began with Imhotep, who stacked multiple mastabas of decreasing size on top of each other. The result was the Step Pyramid of Djoser at Saqqara, the first colossal stone building in history.",
+      "imagePrompt": "The Step Pyramid of Djoser rising from the sands, showing clearly defined stacked layers of stone, ancient Egyptian workers in the foreground for scale, blue sky, cinematic wide shot.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/b84f4fc7-7053-4388-b72a-e773b68d0c68.png",
+      "failed": false
+    },
+    {
+      "title": "Trial and Error: The Bent Pyramid",
+      "content": "Perfection didn't come easily; the Bent Pyramid at Dahshur represents a critical learning curve. Engineers had to abruptly change the angle of the slope halfway up to prevent the structure from collapsing, creating its unique 'bent' appearance.",
+      "imagePrompt": "The Bent Pyramid at Dahshur, distinct change in angle clearly visible, smooth limestone casing partially remaining, realistic desert landscape, dramatic lighting highlighting the slope change.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/4d99c853-7ec0-4c12-82bc-3ac0fbe63c0d.png",
+      "failed": false
+    },
+    {
+      "title": "The Apex: Giza Plateau",
+      "content": "During the Fourth Dynasty, pyramid building reached its peak with the Great Pyramids of Giza. These structures were originally encased in polished white limestone that reflected the sun, capped with gold pyramidions that could be seen for miles.",
+      "imagePrompt": "The Great Pyramids of Giza as they looked 4500 years ago, pristine white limestone casing reflecting sunlight, gold capstones, lush greenery near the Nile in the distance.",
+      "videoPrompt": "A slow aerial pan around the Great Pyramid of Giza in its original state, glistening with smooth white limestone and a glowing gold capstone under the moving sun.",
+      "type": "video",
+      "assetUrl": "/generated/ee4ac36e-405d-4f4e-adf2-1f53e603f5ee.mp4",
+      "failed": false
+    },
+    {
+      "title": "Engineering the Impossible",
+      "content": "Contrary to popular belief, these were built by skilled paid laborers, not slaves, organized in a complex workforce. They used ramps, sledges, and water-lubricated sand to haul multi-ton stone blocks to dizzying heights.",
+      "imagePrompt": "Close-up action shot of ancient Egyptian workers pulling a massive limestone block on a wooden sledge up a ramp, a worker pouring water on the sand in front of the sledge, sweat and dust, historical accuracy.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/07b27180-ee35-40c9-bf37-3da3e30280d0.png",
+      "failed": false
+    },
+    {
+      "title": "The End of an Era",
+      "content": "Eventually, the visibility of pyramids made them easy targets for tomb robbers, leading to a shift in burial customs. Pharaohs began constructing hidden tombs in the Valley of the Kings, trading grand monuments for secrecy and security.",
+      "imagePrompt": "A landscape view of the Valley of the Kings, rugged desert canyons with hidden tomb entrances cut into the rock, contrasting with the open grandeur of the pyramids, sunset lighting.",
+      "videoPrompt": "",
+      "type": "image",
+      "assetUrl": "/generated/70c5b9e4-4c58-457a-a5b9-cba488d80218.png",
+      "failed": false
+    }
+  ],
+  "id": "cbc10b21-81e1-4b45-8c2a-2dc318a7520a",
+  "createdAt": "2025-11-24T02:17:10.385Z"
+}

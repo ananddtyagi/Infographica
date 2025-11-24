@@ -237,7 +237,6 @@ export async function generateVideo(prompt: string, style?: string): Promise<str
     let retries = 0;
 
     while (!operation.done && retries < maxRetries) {
-      console.log("Waiting for video generation to complete...", retries);
       await new Promise((resolve) => setTimeout(resolve, 5000)); // 5 second wait
 
       // Refresh operation status

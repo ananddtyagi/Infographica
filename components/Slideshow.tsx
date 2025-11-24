@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, RotateCw, Home } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, Home, RotateCw } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface Slide {
     title: string;
@@ -226,22 +226,22 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex items-center justify-center px-4 pb-8">
-                <div className="w-full max-w-6xl">
-                    {/* Navigation and Image Container */}
-                    <div className="relative flex items-center justify-center gap-4 md:gap-8 mb-8">
-                        {/* Left Arrow */}
+            <div className="flex-1 flex flex-col items-center justify-start md:justify-center pb-8">
+                <div className="w-full max-w-4xl">
+                    {/* Image/Video Container with Arrows */}
+                    <div className="relative w-full px-0 md:px-0 mb-4 md:mb-8 md:flex md:items-center md:gap-4">
+                        {/* Left Arrow - Outside on desktop, overlayed on mobile */}
                         <button
                             onClick={prevSlide}
                             disabled={currentIndex === 0}
-                            className="p-3 md:p-4 rounded-md bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-300 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                            className="absolute md:relative left-2 md:left-0 top-1/2 md:top-auto -translate-y-1/2 md:translate-y-0 z-20 p-2 md:p-3 rounded-full bg-white/70 md:bg-white dark:bg-black/70 md:dark:bg-[#1a1a1a] backdrop-blur-sm md:backdrop-blur-none border border-gray-300/50 md:border-gray-200 dark:border-gray-700/50 md:dark:border-gray-800 hover:bg-white/90 md:hover:bg-gray-50 dark:hover:bg-black/90 md:dark:hover:bg-gray-900 text-gray-700 dark:text-gray-300 transition-all disabled:opacity-20 md:disabled:opacity-30 disabled:cursor-not-allowed shadow-lg md:shadow-none"
                             title="Previous slide (←)"
                         >
                             <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
                         </button>
 
-                        {/* Image/Video Container */}
-                        <div className="relative w-full max-w-3xl aspect-video bg-white dark:bg-[#1a1a1a] rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800">
+                        <div className="relative w-full aspect-video bg-white dark:bg-[#1a1a1a] md:rounded-lg overflow-hidden border-y md:border border-gray-200 dark:border-gray-800">
+
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={currentIndex}
@@ -309,13 +309,14 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
                                     )}
                                 </motion.div>
                             </AnimatePresence>
+
                         </div>
 
-                        {/* Right Arrow */}
+                        {/* Right Arrow - Outside on desktop, overlayed on mobile */}
                         <button
                             onClick={nextSlide}
                             disabled={currentIndex === slides.length - 1}
-                            className="p-3 md:p-4 rounded-md bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-300 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                            className="absolute md:relative right-2 md:right-0 top-1/2 md:top-auto -translate-y-1/2 md:translate-y-0 z-20 p-2 md:p-3 rounded-full bg-white/70 md:bg-white dark:bg-black/70 md:dark:bg-[#1a1a1a] backdrop-blur-sm md:backdrop-blur-none border border-gray-300/50 md:border-gray-200 dark:border-gray-700/50 md:dark:border-gray-800 hover:bg-white/90 md:hover:bg-gray-50 dark:hover:bg-black/90 md:dark:hover:bg-gray-900 text-gray-700 dark:text-gray-300 transition-all disabled:opacity-20 md:disabled:opacity-30 disabled:cursor-not-allowed shadow-lg md:shadow-none"
                             title="Next slide (→)"
                         >
                             <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
@@ -338,11 +339,10 @@ export function Slideshow({ story, onReset }: SlideshowProps) {
                                         <button
                                             key={idx}
                                             onClick={() => setCurrentIndex(idx)}
-                                            className={`h-1.5 rounded-full transition-all duration-200 ${
-                                                idx === currentIndex 
-                                                    ? "w-6 bg-gray-900 dark:bg-gray-100" 
-                                                    : "w-1.5 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600"
-                                            }`}
+                                            className={`h-1.5 rounded-full transition-all duration-200 ${idx === currentIndex
+                                                ? "w-6 bg-gray-900 dark:bg-gray-100"
+                                                : "w-1.5 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600"
+                                                }`}
                                             title={`Go to slide ${idx + 1}`}
                                         />
                                     ))}

@@ -1,0 +1,58 @@
+{
+  "topic": "How an Air Conditioner Works",
+  "narrative": "An air conditioner doesn't just create cold air; it acts as a heat mover, transferring thermal energy from inside your home to the outdoors. Using the principles of thermodynamics and a chemical fluid called refrigerant, the AC system continuously cycles through states of evaporation and condensation to keep your living space cool.",
+  "slides": [
+    {
+      "title": "The Heat Sponge",
+      "content": "Think of an air conditioner not as a cold-maker, but as a machine that removes heat. It works like a sponge, soaking up the thermal energy from inside your room and squeezing it out outside. This process relies on a continuous loop of a special substance called refrigerant.",
+      "imagePrompt": "A split-screen infographic style illustration. On the left, a stylized living room with blue 'cool' particles appearing. On the right, an outdoor AC unit releasing red 'heat' waves. A translucent pipe connects them, representing the flow of heat removal.",
+      "type": "image",
+      "assetUrl": "/generated/bf7934ac-60e9-4f5d-8c17-57891565905a.png",
+      "failed": false
+    },
+    {
+      "title": "The Compressor: Squeezing the Gas",
+      "content": "The journey begins at the compressor, often called the heart of the system. It takes in low-pressure refrigerant gas and squeezes it tightly, packing the molecules together. This increase in pressure causes the temperature of the gas to skyrocket.",
+      "imagePrompt": "A schematic view of a compressor mechanism. Blue, spread-out gas molecules enter from one side, get compressed by a mechanical piston or scroll, and exit as tightly packed, glowing red high-pressure gas molecules.",
+      "videoPrompt": "A 3D animation showing a piston compressing gas molecules. The particles start blue and slow, but as the space restricts, they turn bright red and vibrate rapidly to signify high heat and pressure.",
+      "type": "video",
+      "assetUrl": "/generated/8c40f98d-c381-4cd8-9562-83350280a5d0.mp4",
+      "failed": false
+    },
+    {
+      "title": "The Condenser: Dumping the Heat",
+      "content": "The hot, high-pressure gas travels to the outdoor unit's condenser coils. A fan blows outside air across these metal fins, dissipating the heat into the atmosphere. As the refrigerant loses heat, it condenses from a hot gas into a high-pressure liquid.",
+      "imagePrompt": "Close-up technical illustration of the outdoor condenser unit. Metal coils are glowing red on the inside, gradually turning orange and then yellow as they spiral down. A large fan blade is visible, blowing heat distortion lines away from the unit.",
+      "type": "image",
+      "assetUrl": "/generated/43662787-419f-4883-8d7c-9b494b088b04.png",
+      "failed": false
+    },
+    {
+      "title": "The Expansion Valve: The Rapid Drop",
+      "content": "The liquid refrigerant now reaches the expansion valve, a tiny opening that creates a bottleneck. As the fluid forces its way through, the pressure drops instantly on the other side. This rapid depressurization causes the temperature to plummet, turning the liquid into a freezing cold mist.",
+      "imagePrompt": "A diagram of an expansion valve. On the left, a solid stream of warm, high-pressure orange liquid enters a narrow nozzle. On the right, it sprays out as a dispersed, icy blue mist into a wider pipe.",
+      "videoPrompt": "A slow-motion animation of fluid spraying through a nozzle. Warm liquid passes through a restriction and immediately expands into a frosty blue cloud, showing the phase change and temperature drop.",
+      "type": "video",
+      "assetUrl": "/generated/1c977dec-db02-4da1-a4b6-3521b2801e8e.mp4",
+      "failed": false
+    },
+    {
+      "title": "The Evaporator: Soaking Up Heat",
+      "content": "This cold mist flows into the evaporator coils located inside your home. As warm indoor air is blown over these frosty coils, the refrigerant absorbs the heat and evaporates back into a gas. The air, now stripped of its heat, is blown back into the room as a cool breeze.",
+      "imagePrompt": "Cross-section of an indoor AC air handler. Red arrows representing warm air enter from the bottom, pass through blue, frosty copper coils, and emerge as blue arrows representing cool air at the top. Water droplets (condensation) are shown dripping into a pan below the coils.",
+      "type": "image",
+      "assetUrl": "/generated/fe9b05a2-3cac-4656-8be6-7fdef253056e.png",
+      "failed": false
+    },
+    {
+      "title": "The Cycle Continues",
+      "content": "Having absorbed the indoor heat, the refrigerant is now a low-pressure gas again. It travels back outside to the compressor to restart the cycle. This continuous loop maintains your desired temperature by constantly moving heat from the inside out.",
+      "imagePrompt": "A complete circular diagram of the AC cycle. The four main components (Compressor, Condenser, Expansion Valve, Evaporator) are connected by pipes. The pipes change color (Red to Orange to Blue) to indicate pressure and temperature changes throughout the loop.",
+      "type": "image",
+      "assetUrl": "/generated/82aafc33-e088-4341-9f2c-d471ceb05d51.png",
+      "failed": false
+    }
+  ],
+  "id": "aef8ce02-e345-4eda-af92-3b044532df72",
+  "createdAt": "2025-11-24T02:14:57.366Z"
+}
