@@ -2,8 +2,8 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Key, Lightbulb, Sparkles } from "lucide-react";
-import { useState } from "react";
 import { usePostHog } from 'posthog-js/react';
+import { useState } from "react";
 
 export const IMAGE_STYLES = {
     drawing: {

@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "next-themes";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { Analytics } from "@vercel/analytics/react";
 import { KeySettings } from "@/components/KeySettings";
 import { PostHogProvider } from "@/components/PostHogProvider";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { Analytics } from "@vercel/analytics/react";
+import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
+import { Inter } from "next/font/google";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
