@@ -14,6 +14,19 @@ const nextConfig = {
   },
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        "node:fs": false,
+        "node:https": false,
+        "node:http": false,
+        "node:path": false,
+      };
+    }
+    return config;
+  },
 };
 
 export default nextConfig;

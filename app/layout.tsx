@@ -1,6 +1,7 @@
 import { KeySettings } from "@/components/KeySettings";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Footer } from "@/components/Footer";
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
@@ -29,6 +30,7 @@ export default function RootLayout({
                             <ThemeToggle />
                         </div>
                         {children}
+                        <Footer />
                     </ThemeProvider>
                     <Analytics />
                 </PostHogProvider>

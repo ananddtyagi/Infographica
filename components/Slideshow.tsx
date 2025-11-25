@@ -1,6 +1,7 @@
 "use client";
 
 import { saveStory } from "@/lib/client-db";
+import { ExportMenu } from "./ExportMenu";
 import { Slide, StoredStory } from "@/lib/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Home, RotateCw } from "lucide-react";
@@ -345,10 +346,15 @@ export function Slideshow({ story, onReset, loadingFacts = [] }: SlideshowProps)
             </div>
 
             {/* Lesson name */}
-            <div className="w-full py-6 px-6 text-center border-b border-gray-100 dark:border-gray-900">
-                <h2 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                    {story.topic}
-                </h2>
+            <div className="w-full py-6 px-6 border-b border-gray-100 dark:border-gray-900">
+                <div className="max-w-7xl mx-auto relative flex items-center justify-center">
+                    <h2 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-gray-100 text-center px-12">
+                        {story.topic}
+                    </h2>
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2">
+                        <ExportMenu story={story} />
+                    </div>
+                </div>
             </div>
 
             {/* Main Content Area */}
