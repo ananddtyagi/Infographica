@@ -48,6 +48,7 @@ export function ExportMenu({ story }: ExportMenuProps) {
 
     const downloadMarkdown = () => {
         let content = `# ${story.topic}\n\n`;
+        content += `*generated using [infographica.app](https://infographica.app)*\n\n`;
         content += `${story.narrative}\n\n`;
         content += `---\n\n`;
 
@@ -94,6 +95,23 @@ export function ExportMenu({ story }: ExportMenuProps) {
         // Title
         doc.setFontSize(24);
         doc.text(story.topic, margin, cursorY);
+        cursorY += 10;
+
+        // Subtitle
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text("generated using ", margin, cursorY);
+        const prefixWidth = doc.getTextWidth("generated using ");
+
+        doc.setTextColor(59, 130, 246); // Blue-500ish
+        const linkText = "infographica.app";
+        doc.text(linkText, margin + prefixWidth, cursorY);
+        const linkWidth = doc.getTextWidth(linkText);
+        
+        // Add clickable link over the text
+        doc.link(margin + prefixWidth, cursorY - 3, linkWidth, 4, { url: "https://infographica.app" });
+        
+        doc.setTextColor(0);
         cursorY += 15;
         
         // Narrative
