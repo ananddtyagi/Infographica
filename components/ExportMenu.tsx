@@ -1,7 +1,7 @@
 "use client";
 
 import { StoredStory } from "@/lib/types";
-import { Download, FileCode, FileText, ChevronDown } from "lucide-react";
+import { Download, FileCode, FileText, ChevronDown, Image as ImageIcon } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import jsPDF from "jspdf";
 
@@ -28,6 +28,16 @@ export function ExportMenu({ story }: ExportMenuProps) {
         if (!url) return "";
         if (url.startsWith("http") || url.startsWith("data:")) return url;
         return `${window.location.origin}${url}`;
+    };
+
+    const fetchImage = async (url: string): Promise<HTMLImageElement> => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = url;
+        });
     };
 
     const fetchImageAsBase64 = async (url: string): Promise<string> => {
@@ -186,6 +196,168 @@ export function ExportMenu({ story }: ExportMenuProps) {
         setIsOpen(false);
     };
 
+    const downloadLongImage = async () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // Settings
+        const width = 800; // Fixed width
+        const margin = 40;
+        const contentWidth = width - (margin * 2);
+        
+        // Temporary context for measuring text
+        ctx.font = 'bold 48px sans-serif'; // Title font
+        
+        // Calculate height first
+        let totalHeight = margin;
+        
+        // Title
+        const titleLines = wrapText(ctx, story.topic, contentWidth);
+        totalHeight += titleLines.length * 60 + 20;
+
+        // Subtitle
+        totalHeight += 30;
+
+        // Narrative
+        ctx.font = '24px sans-serif';
+        const narrativeLines = wrapText(ctx, story.narrative, contentWidth);
+        totalHeight += narrativeLines.length * 34 + 40;
+
+        // Slides
+        for (const slide of story.slides) {
+            totalHeight += 40; // Spacing
+
+            // Slide Title
+            ctx.font = 'bold 32px sans-serif';
+            const slideTitleLines = wrapText(ctx, `Slide: ${slide.title}`, contentWidth);
+            totalHeight += slideTitleLines.length * 42 + 20;
+
+            // Image
+            if (slide.assetUrl && slide.type === 'image') {
+                 const imgHeight = (contentWidth * 9) / 16;
+                 totalHeight += imgHeight + 20;
+            }
+
+            // Content
+            ctx.font = '24px sans-serif';
+            const contentLines = wrapText(ctx, slide.content, contentWidth);
+            totalHeight += contentLines.length * 34 + 20;
+        }
+        
+        totalHeight += margin;
+
+        // Resize canvas
+        canvas.width = width;
+        canvas.height = totalHeight;
+
+        // Reset context after resize
+        // Fill Background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, totalHeight);
+        ctx.fillStyle = '#000000';
+        ctx.textBaseline = 'top';
+
+        // Draw Content
+        let cursorY = margin;
+
+        // Title
+        ctx.font = 'bold 48px sans-serif';
+        for (const line of titleLines) {
+            ctx.fillText(line, margin, cursorY);
+            cursorY += 60;
+        }
+        cursorY += 10;
+
+        // Subtitle
+        ctx.font = '16px sans-serif';
+        ctx.fillStyle = '#666666';
+        ctx.fillText("generated using infographica.app", margin, cursorY);
+        ctx.fillStyle = '#000000';
+        cursorY += 30;
+
+        // Narrative
+        ctx.font = '24px sans-serif';
+        for (const line of narrativeLines) {
+            ctx.fillText(line, margin, cursorY);
+            cursorY += 34;
+        }
+        cursorY += 40;
+
+        // Slides
+        for (let i = 0; i < story.slides.length; i++) {
+            const slide = story.slides[i];
+            
+            // Separator line
+            ctx.beginPath();
+            ctx.moveTo(margin, cursorY);
+            ctx.lineTo(width - margin, cursorY);
+            ctx.strokeStyle = '#eeeeee';
+            ctx.stroke();
+            cursorY += 40;
+
+            // Slide Title
+            ctx.font = 'bold 32px sans-serif';
+            const slideTitleLines = wrapText(ctx, `${i + 1}. ${slide.title}`, contentWidth);
+            for (const line of slideTitleLines) {
+                ctx.fillText(line, margin, cursorY);
+                cursorY += 42;
+            }
+            cursorY += 20;
+
+            // Image
+            if (slide.assetUrl && slide.type === 'image') {
+                try {
+                    const img = await fetchImage(slide.assetUrl);
+                    const imgHeight = (contentWidth * 9) / 16;
+                    ctx.drawImage(img, margin, cursorY, contentWidth, imgHeight);
+                    cursorY += imgHeight + 20;
+                } catch (e) {
+                    console.error("Failed to draw image to canvas", e);
+                }
+            }
+
+            // Content
+            ctx.font = '24px sans-serif';
+            const contentLines = wrapText(ctx, slide.content, contentWidth);
+            for (const line of contentLines) {
+                ctx.fillText(line, margin, cursorY);
+                cursorY += 34;
+            }
+            cursorY += 20;
+        }
+
+        // Download
+        const url = canvas.toDataURL("image/jpeg", 0.9);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${story.topic.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_long.jpg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setIsOpen(false);
+    };
+
+    // Helper to wrap text
+    function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+        const words = text.split(' ');
+        const lines = [];
+        let currentLine = words[0];
+
+        for (let i = 1; i < words.length; i++) {
+            const word = words[i];
+            const width = ctx.measureText(currentLine + " " + word).width;
+            if (width < maxWidth) {
+                currentLine += " " + word;
+            } else {
+                lines.push(currentLine);
+                currentLine = word;
+            }
+        }
+        lines.push(currentLine);
+        return lines;
+    }
+
     return (
         <div className="relative inline-block text-left" ref={menuRef}>
             <button
@@ -216,6 +388,14 @@ export function ExportMenu({ story }: ExportMenuProps) {
                         >
                             <FileText className="mr-3 h-4 w-4" />
                             PDF Document
+                        </button>
+                        <button
+                            onClick={downloadLongImage}
+                            className="flex items-center w-full px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
+                            role="menuitem"
+                        >
+                            <ImageIcon className="mr-3 h-4 w-4" />
+                            Super Long Image
                         </button>
                     </div>
                 </div>
