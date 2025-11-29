@@ -1,9 +1,9 @@
 "use client";
 
 import { StoredStory } from "@/lib/types";
-import { Download, FileCode, FileText, ChevronDown, Image as ImageIcon } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
 import jsPDF from "jspdf";
+import { ChevronDown, Download, FileCode, FileText, Image as ImageIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface ExportMenuProps {
     story: StoredStory;
@@ -117,13 +117,13 @@ export function ExportMenu({ story }: ExportMenuProps) {
         const linkText = "infographica.app";
         doc.text(linkText, margin + prefixWidth, cursorY);
         const linkWidth = doc.getTextWidth(linkText);
-        
+
         // Add clickable link over the text
         doc.link(margin + prefixWidth, cursorY - 3, linkWidth, 4, { url: "https://infographica.app" });
-        
+
         doc.setTextColor(0);
         cursorY += 15;
-        
+
         // Narrative
         doc.setFontSize(12);
         const splitNarrative = doc.splitTextToSize(story.narrative, maxLineWidth);
@@ -132,7 +132,7 @@ export function ExportMenu({ story }: ExportMenuProps) {
 
         for (let i = 0; i < story.slides.length; i++) {
             const slide = story.slides[i];
-            
+
             // Start each slide on a new page usually, unless it's the first and we have space
             if (i > 0) {
                 doc.addPage();
@@ -154,7 +154,7 @@ export function ExportMenu({ story }: ExportMenuProps) {
                     if (imgData) {
                         const imgWidth = maxLineWidth;
                         const imgHeight = (imgWidth * 9) / 16; // 16:9 aspect ratio
-                        
+
                         // Check if image fits
                         if (cursorY + imgHeight > pageHeight - margin) {
                             doc.addPage();
@@ -177,15 +177,15 @@ export function ExportMenu({ story }: ExportMenuProps) {
             // Content
             doc.setFontSize(12);
             const splitContent = doc.splitTextToSize(slide.content, maxLineWidth);
-            
+
             // Check if content fits
             if (cursorY + (splitContent.length * 5) > pageHeight - margin) {
-                 // If it doesn't fit, maybe add page? Or just let it flow (jspdf doesn't flow automatically without help)
-                 // For simplicity, if image took up most space, new page for text
-                 if (cursorY > pageHeight / 2) {
-                     doc.addPage();
-                     cursorY = margin;
-                 }
+                // If it doesn't fit, maybe add page? Or just let it flow (jspdf doesn't flow automatically without help)
+                // For simplicity, if image took up most space, new page for text
+                if (cursorY > pageHeight / 2) {
+                    doc.addPage();
+                    cursorY = margin;
+                }
             }
 
             doc.text(splitContent, margin, cursorY);
@@ -205,13 +205,13 @@ export function ExportMenu({ story }: ExportMenuProps) {
         const width = 800; // Fixed width
         const margin = 40;
         const contentWidth = width - (margin * 2);
-        
+
         // Temporary context for measuring text
         ctx.font = 'bold 48px sans-serif'; // Title font
-        
+
         // Calculate height first
         let totalHeight = margin;
-        
+
         // Title
         const titleLines = wrapText(ctx, story.topic, contentWidth);
         totalHeight += titleLines.length * 60 + 20;
@@ -235,8 +235,8 @@ export function ExportMenu({ story }: ExportMenuProps) {
 
             // Image
             if (slide.assetUrl && slide.type === 'image') {
-                 const imgHeight = (contentWidth * 9) / 16;
-                 totalHeight += imgHeight + 20;
+                const imgHeight = (contentWidth * 9) / 16;
+                totalHeight += imgHeight + 20;
             }
 
             // Content
@@ -244,7 +244,7 @@ export function ExportMenu({ story }: ExportMenuProps) {
             const contentLines = wrapText(ctx, slide.content, contentWidth);
             totalHeight += contentLines.length * 34 + 20;
         }
-        
+
         totalHeight += margin;
 
         // Resize canvas
@@ -287,7 +287,7 @@ export function ExportMenu({ story }: ExportMenuProps) {
         // Slides
         for (let i = 0; i < story.slides.length; i++) {
             const slide = story.slides[i];
-            
+
             // Separator line
             ctx.beginPath();
             ctx.moveTo(margin, cursorY);
